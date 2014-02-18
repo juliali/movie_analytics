@@ -1,0 +1,157 @@
+@RELATION PERSON
+@DATA
+Mark Jones,薇娃·碧安卡 ; 比利·赞恩 ; 安娜琳·麦考德,美国,犯罪 ; 惊悚,2013,class_7
+金性秀,西岛秀俊 ; 金孝珍 ; 真木阳子,日本 ; 韩国,剧情,2013,class_5
+Jonathan Newman,阿纽林·巴纳德 Aneurin Barnard ; 麦克·辛 ; 琳娜·海蒂,英国,冒险 ; 家庭 ; 奇幻,2013,class_7
+Jeffrey Travis,Ethan Flower ; Åsa Wallander ; Jenn Gotzon,美国,剧情 ; 科幻 ; 惊悚,2013,class_6
+迫井政行,潘めぐみ ; KENN ; 鸟海浩辅,日本,动画,2013,class_5
+John Murlowski,杰森·缪斯 ; 谢莉·朗 ; 约翰·阿莫斯,美国,喜剧,2011,class_4
+滕华涛,倪妮 ; 井柏然 ; 刘雅瑟,中国大陆,喜剧 ; 爱情,2013,class_6
+Emmanuel Itier,克里斯·康拉德 ; Luke Barnett ; Poncho Hodges,美国,动作,2013,class_7
+凌睿,谭会中 ; 龚宇鹏 ; 肖煚元,中国大陆,剧情 ; 喜剧 ; 动作 ; 悬疑,2013,class_1
+伊藤智彦,松冈祯丞 ; 户松遥 ; 伊藤加奈惠,日本,动画,2013,class_5
+,香取慎吾 ; 稲垣吾郎 ; 北山宏光,日本,,2013,class_1
+,松本人志 ; 浜田雅功 ; 远藤章造,日本,,2013,class_2
+伦·怀斯曼 Len Wiseman,凯特·贝金赛尔 Kate Beckinsale,美国,动作 ; 奇幻,2013,class_5
+程小挑,张凯 ; 冯洋 ; 周正,中国大陆,剧情,2013,class_5
+James Kent,Sophie Turner ; Vanessa Redgrave ; Olivia Colman,英国,剧情 ; 悬疑 ; 惊悚 ; 家庭,2013,class_5
+Radhika Rao,康格娜·拉瑙特 ; 桑尼·戴尔 ; Prem Chopra,印度 India,剧情 ; 喜剧 ; 动作 ; 爱情,2013,class_5
+吕美静,西川 ; 唐晓渡 ; 文昕,香港,纪录片,2013,class_4
+王霄逸,顾旭辉 ; 刘美邑 ; 张峰铭,中国大陆,剧情 ; 爱情 ; 短片,2013,class_1
+Peter Leonard,Paul Nurse ; Lisa Jardine ; Steve Jones,英国,纪录片,2013,class_5
+梁祺,,中国大陆,纪录片,2013,class_2
+三谷幸喜,竹内结子 ; 生濑胜久 ; 户田惠梨香,日本,剧情 ; 喜剧,2013,class_3
+鬼塚大輔,内田真礼 ; 上坂堇,日本,动画,2013,class_5
+尼尔森·申,石班瑜 ; 姜瑰瑾 ; 刘杰,中国大陆,动画 ; 冒险,2013,class_5
+平尾隆之,諸星すみれ ; 加隈亜衣 ; 沢城みゆき,日本,剧情 ; 动画,2013,class_8
+郑成峰,,中国大陆,动画 ; 奇幻 ; 冒险,2013,class_7
+张帆,李威 ; 蓝燕 ; 赵楚仑,中国大陆,悬疑 ; 惊悚,2013,class_7
+山田丰德,宫野真守 ; 小澤みのり,日本,,2013,class_5
+,,2013-12-28,美国,2013,class_1
+约翰·威尔斯,朱莉娅·罗伯茨 ; 梅丽尔·斯特里普 ; 伊万·麦克格雷格,美国,剧情 ; 喜剧,2013,class_3
+川口敬一郎,潘めぐみ ; 伊瀬茉莉也,日本,动画,2013,class_4
+,关智一 ; 冈本信彦 ; 东山奈央,日本,剧情 ; 动作 ; 动画,2013,class_4
+蔡於位,吴莫愁 ; 李代沫 ; 张玮,中国大陆,剧情 ; 爱情 ; 音乐,2013,class_8
+鄭無邊,王迪 ; 顧浩藍 ; 莫里阿才,中国大陆,纪录片 ; 舞台艺术,2013,class_4
+,Ian McKellen ; Derek Jacobi ; Frances de la Tour,英国,喜剧,2013,class_1
+智磊,袁咏仪 ; 邱心志 ; 周秀娜,中国大陆 ; 香港,喜剧 ; 爱情,2013,class_8
+Tolga Örnek,Timuçin Esen ; 塞丽麦·伊根赤 ; Nevra Serezli,土耳其 Turkey,剧情 ; 喜剧 ; 爱情 ; 家庭,2013,class_1
+吕磊,王希之 ; 冯璧晴 ; 汪佳羽,中国大陆,,2013,class_7
+王松,向邀宇（@AYO哟） ; 吴思远（@小吴Mr） ; 曾荟文,中国大陆,剧情 ; 爱情 ; 短片 ; 同性,2013,class_5
+朴恩亨,尹珍序 ; 吴闵硕,韩国,剧情,2013,class_8
+苗述,梁家仁 ; 姜超 ; 陈观泰,中国大陆 ; 香港,剧情 ; 动作,2013,class_7
+史凤和,唐国强 ; 刘子枫 ; 王伍福,中国大陆,剧情 ; 传记,2013,class_8
+Kim Jae-soo,,韩国,剧情,2013,class_8
+林旭坚,丁雨晨 ; 谢韵 ; 陆乐,中国大陆,剧情 ; 爱情 ; 短片,2013,class_5
+王文明,,中国大陆 ; 日本,纪录片,2013,class_2
+,诺尔·费丁 ; 理查德·艾欧阿德 ; 杰克·怀特霍尔,英国,,2013,class_2
+Iain B. MacDonald,凯莉·亚当斯 ; 奥利佛 克里斯 ; 斯蒂芬·怀特,英国,喜剧,2013,class_1
+本·斯蒂勒,本·斯蒂勒 ; 克里斯汀·韦格 ; 亚当·斯科特,美国,剧情 ; 喜剧 ; 奇幻 ; 冒险,2013,class_3
+马丁·斯科塞斯,莱昂纳多·迪卡普里奥 ; 乔纳·希尔 ; 玛格特·罗比,美国,剧情 ; 喜剧 ; 传记 ; 犯罪,2013,class_4
+彼得·博格,马克·沃尔伯格 ; 泰勒·克奇 ; 埃米尔·赫斯基,美国,剧情 ; 战争,2013,class_4
+拉斯·冯·提尔,夏洛特·甘斯布 ; 斯特兰·斯卡斯加德 ; 斯塔西·马汀,丹麦 ; 德国 ; 法国,剧情 ; 情色,2013,class_4
+菲利普·斯托茨,本·金斯利 ; 汤姆·佩恩 ; 斯特兰·斯卡斯加德,德国,剧情 ; 历史 ; 冒险,2013,class_5
+拉斯·冯·提尔,夏洛特·甘斯布 ; 斯特兰·斯卡斯加德 ; 斯塔西·马汀,丹麦 ; 法国 ; 比利时,剧情,2013,class_3
+彼得·西格尔,罗伯特·德尼罗 ; 西尔维斯特·史泰龙 ; 凯文·哈特,美国,喜剧 ; 运动,2013,class_5
+Felix Herngren,,瑞典,喜剧 ; 冒险,2013,class_3
+Aleksandr Karpilovsky,尤里·库琴科 ; Ivan Urgant ; 彼得·费奥多罗夫,俄罗斯,喜剧,2013,class_3
+Jamie Payne,马特·史密斯 ; 彼得·卡帕尔蒂 ; 珍娜·科尔曼,英国,科幻,2013,class_3
+,杰西卡·雷恩 ; 珍妮·艾加特 ; Laura Main,英国,剧情,2013,class_1
+朱浩伟,贾斯汀·比伯 ; Scooter Braun ; Ryan Good,美国,纪录片,2013,class_7
+荣·伊斯特,吉姆·卡特 ; 休·博内威利 ; 米歇尔·道克瑞,英国,剧情 ; 爱情 ; 家庭,2013,class_3
+Matt Lipsey,India Ria Amarteifio ; Tim Bentinck ; Miranda Hart,英国,剧情 ; 喜剧,2013,class_4
+Ben Stassen,,比利时 Belgium,动画 ; 冒险 ; 家庭,2013,class_5
+Stephen Shearman,贝尔·格里尔斯 ; 斯蒂芬·弗雷,英国,冒险 ; 纪录片,2013,class_1
+红优,泽城美雪 ; 寺岛拓笃 ; 铃村健一,日本,动画,2013,class_5
+Hannes Holm,William Ringström ; Morgan Alling ; Anja Lundkvist,瑞典 Sweden,喜剧,2013,class_8
+Amaan Khan,阿米达普·巴真 ; 阿贾耶·德乌干 ; 薇迪亚·巴兰,印度 India,剧情 ; 喜剧 ; 动作 ; 爱情,2013,class_1
+元申延,孔侑 ; 朴熙顺 ; 赵成夏,韩国,动作,2013,class_4
+丁晟,成龙 ; 刘烨 ; 景甜,中国大陆 ; 香港,剧情 ; 动作 ; 犯罪 ; 悬疑,2013,class_6
+庄佳龙,黄文骞 ; 姜禹尧,中国大陆,剧情 ; 儿童 ; 喜剧 ; 奇幻,2013,class_3
+大谷太郎,沟端淳平 ; 佐佐木希 ; 臼田麻美,日本,爱情,2013,class_6
+Nicholas Laughland,内尔·德贞 ; 格威利姆·李,英国,剧情 ; 犯罪 ; 悬疑,2013,class_4
+,本尼迪克特·康伯巴奇 ; 马丁·弗瑞曼 ; 拉珀特·格雷夫斯,英国,剧情 ; 短片,2013,class_1
+,克里斯·奥多德 ; 理查德·艾欧阿德 ; 凯瑟琳·帕金森,英国,纪录片,2013,class_1
+英勉,风间俊介 ; 波瑠 ; 山崎裕太,日本,剧情 ; 喜剧 ; 爱情,2013,class_4
+李杨,,中国大陆,纪录片,2013,class_2
+Stephen Reynolds,Roxanne McKee ; 丹尼·戴尔 ; Vincent Regan,美国,动作,2013,class_6
+Paul Tanter,Ian Virgo ; Ryan Winsley ; Alex Esmail,英国,,2013,class_5
+Alrick Riley,约纳斯·阿姆斯特朗 ; 亚当·雷纳 ; 保罗·凯耶,英国,剧情,2013,class_4
+彭磊,江雨晨 ; 李京 ; 张楠,中国大陆,剧情 ; 爱情,2013,class_5
+李鲲,于芷晴 ; 曾晓夏 ; 潘晓俊,中国大陆,爱情 ; 情色,2013,class_8
+Fenton Bailey,布兰妮·斯皮尔斯,美国,传记 ; 纪录片,2013,class_2
+山崎贵,冈田准一 ; 三浦春马 ; 井上真央,日本,战争,2013,class_5
+潘思夷,彭丕 ; 叶静 ; 葛景舜,中国大陆,剧情 ; 科幻 ; 惊悚 ; 恐怖,2013,class_3
+艾萨克·佛罗伦汀,斯科特·阿金斯 ; 维他亚·潘斯林加姆 ; 小杉健,泰国 ; 美国,动作 ; 犯罪 ; 惊悚,2013,class_6
+Dominic Gallagher,Alastair Sooke,英国,纪录片,2013,class_3
+吉田恵輔,堀北真希 ; 松田龙平 ; 余贵美子,日本,剧情,2013,class_2
+,吉米·法伦 ; 贾斯汀·汀布莱克,美国,舞台艺术,2013,class_1
+佐藤太,马场彻 ; 神永圭佑 ; 马场良马,日本,,2013,class_8
+雷涌,金印 ; 薛斌 ; 吴青松,中国大陆,剧情 ; 喜剧 ; 爱情 ; 短片,2013,class_8
+伍育润,复复驮 ; 小楚 ; 姚忠恒,中国大陆,剧情 ; 爱情,2013,class_7
+Doug Liman,Hayden Christensen,USA,,2013,class_4
+Vijay Krishna Acharya,阿米尔·汗 ; 阿皮谢克·巴真 ; 卡特莉娜·卡芙,印度,动作 ; 犯罪 ; 惊悚,2013,class_2
+大卫·欧·拉塞尔,克里斯蒂安·贝尔 ; 布莱德利·库珀 ; 艾米·亚当斯,美国,剧情 ; 犯罪,2013,class_5
+杰茜·麦克考麦克,米歇尔·莫娜汉 ; 拉妲·米契尔 ; 乔恩·多尔,美国,剧情 ; 喜剧,2013,class_6
+Barry Cook,查理·罗 ; Angourie Rice,英国 ; 美国 ; 澳大利亚,动作 ; 动画 ; 纪录片,2013,class_5
+Juan Cavestany,欧内斯特·艾戴里欧 ; 卡洛斯·阿雷塞斯 ; 劳尔·阿雷瓦罗,西班牙,剧情 ; 喜剧,2013,class_3
+Wip Vernooij,Keith Wickham ; Emma Tate ; Tom Clarke Hill,英国,儿童 ; 动画,2013,class_8
+雷小雨,佴文 ; 杨奇,中国大陆,剧情 ; 爱情 ; 情色,2013,class_8
+Erol Özlevi,Saadet Aksoy ; Tolgahan Sayisman ; Ruhsar Öcal,土耳其,剧情 ; 历史 ; 爱情,2013,class_1
+Faruk Aksoy,Ali Poyrazoğlu ; Asuman Dabak ; Fikret Kuşkan,土耳其 Turkey,剧情 ; 喜剧 ; 爱情 ; 家庭,2013,class_1
+水岛努,山本希望 ; 野上尤加奈 ; 兴津和幸,日本,动画,2013,class_2
+冯小刚,葛优 ; 白百何 ; 李小璐,中国大陆,喜剧,2013,class_6
+孔二狗,孔二狗 ; 潘粤明 ; 王学兵,中国大陆,剧情,2013,class_6
+位菊月,位菊月,中国大陆,剧情,2013,class_7
+陈柏坚,吉泽明步 ; 白客,中国大陆,剧情 ; 爱情 ; 短片 ; 情色,2013,class_7
+Lim Jin-seung,,韩国,喜剧,2013,class_5
+亚当·麦凯,威尔·法瑞尔 ; 史蒂夫·卡瑞尔 ; 保罗·路德,美国,喜剧,2013,class_5
+杨宇锡,宋康昊 ; 吴达洙 ; 金英爱,韩国,剧情,2013,class_3
+阿里埃尔·泽图恩,诺拉·阿娜泽德尔 ; 热拉尔·朗万 ; 马修·卡索维茨,法国 ; 比利时 ; 捷克,,2013,class_5
+Tristan Séguéla,罗兰·拉斐特 ; 乔纳森·科恩 ; Daniel Guillaume,法国,喜剧,2013,class_5
+Nicolas Vanier,切基·卡尤 ; Dimitri Storoge ; Jan Oliver Schroeder,法国,冒险,2013,class_2
+祁磊,,中国大陆,纪录片 ; 短片,2013,class_3
+Eric Omond,Malik Zidi ; Stéphane Debac ; Anaïs Demoustier,法国,动画 ; 家庭,2013,class_7
+洛森,黄嫀砚 ; 姚菲菲,中国大陆,剧情 ; 爱情 ; 情色,2013,class_8
+黄元达,尹艺锦 ; 于柏林 ; 钱健夫,中国大陆,剧情 ; 爱情 ; 短片,2013,class_5
+,Bo Burnham,美国,喜剧,2013,class_1
+希亚·拉博夫,吉姆·加菲根 ; 蒂托·蒙蒂尔,美国,短片,2012,class_5
+源孝志,石原里美 ; 井浦新 ; 田中丽奈,日本,,2013,class_4
+,保罗·莱维斯克 ; 兰迪·奥尔顿 ; Stephanie McMahon,美国,动作 ; 舞台艺术,2013,class_5
+Steve Franks,玛吉·劳森 ; 艾丽·西蒂 ; 吉米·辛普森,美国,剧情 ; 喜剧 ; 犯罪,2013,class_3
+Chris Rodley,Bob Ezrin ; Mick Rock ; Lenny Kaye,英国,纪录片,2013,class_1
+,,2013-12-15,日本,2013,class_3
+小泉德宏,佐藤健 ; 大原櫻子 ; 三浦翔平,日本,剧情 ; 爱情,2013,class_5
+铃木卓尔,川崎航星 ; 宮崎将 ; 山田真歩,日本,,2013,class_3
+伊藤俊也,田中泯 ; 石原志保,日本,,2013,class_3
+朝原雄三,上戸彩 ; 高良健吾 ; 西田敏行,日本,古装,2013,class_4
+田崎龙太,佐野岳 ; 小林豊 ; 高杉真宙,日本,动作 ; 奇幻,2013,class_8
+松林要树,,日本,纪录片,2013,class_3
+,约翰·古德曼 ; Kings of Leon,美国,舞台艺术,2013,class_5
+约翰·李·汉考克,艾玛·汤普森 ; 汤姆·汉克斯 ; 保罗·吉亚玛提,美国 ; 英国 ; 澳大利亚,剧情,2013,class_4
+麦咏麟,周秀娜 ; 汪东城  ; 陈汉典,中国大陆,喜剧 ; 爱情,2013,class_7
+彼得·杰克逊,伊恩·麦克莱恩 ; 马丁·弗瑞曼 ; 理查德·阿米蒂奇,美国 ; 新西兰,剧情 ; 动作 ; 奇幻 ; 冒险,2013,class_3
+卫捷,聂远 ; 焦恩俊 ; 胡可,中国大陆,喜剧,2013,class_7
+泰勒·派瑞,泰勒·派瑞 ; 王牌接线员拉里 ; 提卡·森普特,美国,喜剧,2013,class_4
+Ketche,恩金.阿尔坦 ; 吾紫姑.纳玛尔 ; Emin Gürsoy,土耳其 Turkey,剧情 ; 喜剧 ; 爱情 ; 家庭,2013,class_1
+程贺彬 Hebin Cheng,梁嘉茵 Jiayin Liang ; 诸葛俊逸 Junyi Zhuge ; 伍威龙 Weilong Wu,中国大陆,,2013,class_8
+李贤中,金雅中 ; 朱元 ; 车太贤,韩国,喜剧 ; 爱情 ; 犯罪,2013,class_5
+袁锦麟,刘德华 ; 姚晨 ; 林家栋,香港 ; 中国大陆,动作 ; 犯罪,2013,class_5
+今泉力哉,青柳文子 ; 阿部隼也 ; 岡部成司,日本,,2013,class_5
+Steffen Haars,西尔维娅·侯克斯 ; 雷蒙德·提哈瑞 ; Birgit Schuurman,荷兰,喜剧,2013,class_7
+Marc Rensing,Anna Blomeier ; Steffi Kühnert ; Lene Oderich,德国,剧情,2013,class_5
+Min Byeong-woo,,韩国,喜剧 ; 爱情,2012,class_6
+刘鼎业,王栎鑫 ; 赵正平 ; 刘真,中国大陆,剧情 ; 爱情 ; 歌舞,2013,class_5
+神山健治,福山润 ; 佐仓绫音 ; てらそままさき,日本,科幻 ; 动画 ; 短片,2013,class_3
+,,2013-12-12,以色列,2013,class_3
+程工,,中国大陆,纪录片,2013,class_3
+王冉,井柏然,中国大陆,短片,2013,class_5
+黄钇霖,,中国大陆,动画 ; 短片,2013,class_5
+方恩珍,全度妍 ; 高修,韩国,剧情,2013,class_3
+瓦莱丽·勒梅西埃,瓦莱丽·勒梅西埃 ; 吉尔·勒卢什,法国,喜剧,2013,class_5
+@ATTRIBUTE director {,迫井政行,麦咏麟,AleksandrKarpilovsky,滕华涛,约翰·威尔斯,FelixHerngren,彼得·杰克逊,佐藤太,KimJae-soo,史凤和,AlrickRiley,智磊,庄佳龙,杰茜·麦克考麦克,JeffreyTravis,梁祺,WipVernooij,铃木卓尔,BenStassen,潘思夷,大谷太郎,黄元达,英勉,小泉德宏,陈柏坚,希亚·拉博夫,马丁·斯科塞斯,冯小刚,MarkJones,StephenShearman,王冉,约翰·李·汉考克,VijayKrishnaAcharya,本·斯蒂勒,红优,雷小雨,程贺彬HebinCheng,EricOmond,StephenReynolds,鬼塚大輔,NicholasLaughland,尼尔森·申,王松,丁晟,FarukAksoy,雷涌,大卫·欧·拉塞尔,朴恩亨,ErolÖzlevi,刘鼎业,王文明,LimJin-seung,MattLipsey,吕美静,吉田恵輔,彭磊,伦·怀斯曼LenWiseman,李鲲,元申延,拉斯·冯·提尔,水岛努,瓦莱丽·勒梅西埃,田崎龙太,源孝志,彼得·博格,JuanCavestany,李杨,TolgaÖrnek,SteveFranks,JonathanNewman,阿里埃尔·泽图恩,PaulTanter,艾萨克·佛罗伦汀,HannesHolm,平尾隆之,EmmanuelItier,凌睿,ChrisRodley,DominicGallagher,川口敬一郎,DougLiman,菲利普·斯托茨,TristanSéguéla,朱浩伟,黄钇霖,吕磊,山田丰德,IainB.MacDonald,李贤中,荣·伊斯特,RadhikaRao,苗述,亚当·麦凯,泰勒·派瑞,伊藤俊也,鄭無邊,张帆,AmaanKhan,FentonBailey,JamesKent,洛森,SteffenHaars,孔二狗,程工,松林要树,今泉力哉,位菊月,MarcRensing,NicolasVanier,伍育润,PeterLeonard,朝原雄三,山崎贵,彼得·西格尔,三谷幸喜,MinByeong-woo,袁锦麟,BarryCook,祁磊,JohnMurlowski,方恩珍,蔡於位,王霄逸,程小挑,郑成峰,伊藤智彦,杨宇锡,神山健治,林旭坚,卫捷,Ketche,JamiePayne,金性秀}
+@ATTRIBUTE actors {,FikretKuşkan,伍威龙WeilongWu,休·博内威利,潘晓俊,吴思远（@小吴Mr）,宫野真守,卡特莉娜·卡芙,保罗·路德,远藤章造,小楚,罗兰·拉斐特,井浦新,BoBurnham,EmmaTate,冈本信彦,石原志保,周正,蒂托·蒙蒂尔,薇迪亚·巴兰,西川,吉尔·勒卢什,BobEzrin,IvanUrgant,OliviaColman,西尔维娅·侯克斯,AliPoyrazoğlu,MalikZidi,佐野岳,白客,竹内结子,刘烨,KingsofLeon,谢莉·朗,李京,唐晓渡,克里斯蒂安·贝尔,马丁·弗瑞曼,全度妍,刘子枫,松田龙平,兰迪·奥尔顿,RyanGood,生濑胜久,瓦莱丽·勒梅西埃,SteffiKühnert,BirgitSchuurman,松本人志,阿纽林·巴纳德AneurinBarnard,克里斯汀·韦格,恩金.阿尔坦,西尔维斯特·史泰龙,阿贾耶·德乌干,拉珀特·格雷夫斯,TimBentinck,潘めぐみ,葛景舜,维他亚·潘斯林加姆,陈观泰,冈田准一,玛吉·劳森,斯特兰·斯卡斯加德,位菊月,金雅中,阿部隼也,AnaïsDemoustier,佐藤健,泰勒·派瑞,AngourieRice,姚晨,关智一,李代沫,尤里·库琴科,伊万·麦克格雷格,孔二狗,布兰妮·斯皮尔斯,泰勒·克奇,宋康昊,山本希望,顾旭辉,石原里美,景甜,保罗·吉亚玛提,聂远,卡洛斯·阿雷塞斯,王牌接线员拉里,唐国强,薛斌,浜田雅功,LeneOderich,劳尔·阿雷瓦罗,贾斯汀·汀布莱克,岡部成司,SaadetAksoy,本·金斯利,斯塔西·马汀,姜瑰瑾,诺尔·费丁,乔纳·希尔,赵楚仑,EminGürsoy,彼得·费奥多罗夫,伊恩·麦克莱恩,克里斯·奥多德,稲垣吾郎,AsumanDabak,户田惠梨香,薇娃·碧安卡,StephanieMcMahon,肖煚元,艾丽·西蒂,彭丕,田中丽奈,金孝珍,姚忠恒,LisaJardine,EthanFlower,曾荟文,珍娜·科尔曼,亚当·雷纳,波瑠,冯洋,切基·卡尤,倪妮,复复驮,焦恩俊,诺拉·阿娜泽德尔,比利·赞恩,马场彻,向邀宇（@AYO哟）,莫里阿才,陈汉典,麦克·辛,吴青松,NevraSerezli,文昕,埃米尔·赫斯基,梁家仁,姜禹尧,乔纳森·科恩,布莱德利·库珀,北山宏光,梁嘉茵JiayinLiang,小杉健,朱元,汪佳羽,LauraMain,约翰·阿莫斯,小林豊,佐仓绫音,查理·罗,DimitriStoroge,泽城美雪,兴津和幸,白百何,张凯,内尔·德贞,沟端淳平,邱心志,凯莉·亚当斯,AlexEsmail,孔侑,福山润,川崎航星,于柏林,钱健夫,米歇尔·道克瑞,上坂堇,AnnaBlomeier,顧浩藍,井上真央,TomClarkeHill,保罗·凯耶,康格娜·拉瑙特,小澤みのり,野上尤加奈,IndiaRiaAmarteifio,LukeBarnett,西岛秀俊,王希之,DerekJacobi,神永圭佑,雷蒙德·提哈瑞,王栎鑫,塞丽麦·伊根赤,MickRock,VanessaRedgrave,张楠,PaulNurse,井柏然,赵正平,罗伯特·德尼罗,桑尼·戴尔,刘美邑,金印,冯璧晴,葛优,杰克·怀特霍尔,吾紫姑.纳玛尔,张峰铭,东山奈央,SophieTurner,伊瀬茉莉也,山崎裕太,李威,斯蒂芬·怀特,本·斯蒂勒,RyanWinsley,PonchoHodges,亚当·斯科特,青柳文子,杰森·缪斯,热拉尔·朗万,IanVirgo,西田敏行,凯特·贝金赛尔KateBeckinsale,阿米尔·汗,刘雅瑟,林家栋,莱昂纳多·迪卡普里奥,乔恩·多尔,佴文,彼得·卡帕尔蒂,AnjaLundkvist,户松遥,汤姆·佩恩,TolgahanSayisman,陆乐,伊藤加奈惠,RoxanneMcKee,真木阳子,FrancesdelaTour,威尔·法瑞尔,马克·沃尔伯格,三浦春马,JanOliverSchroeder,MirandaHart,ScooterBraun,丁雨晨,拉妲·米契尔,丹尼·戴尔,叶静,吉姆·卡特,玛格特·罗比,鸟海浩辅,凯文·哈特,于芷晴,寺岛拓笃,高修,提卡·森普特,松冈祯丞,谭会中,杨奇,石班瑜,胡可,理查德·艾欧阿德,吉泽明步,本尼迪克特·康伯巴奇,保罗·莱维斯克,成龙,约纳斯·阿姆斯特朗,周秀娜,龚宇鹏,宮崎将,VincentRegan,内田真礼,佐佐木希,吴达洙,风间俊介,铃村健一,姚菲菲,王迪,高良健吾,谢韵,格威利姆·李,凯瑟琳·帕金森,马修·卡索维茨,王学兵,てらそままさき,KeithWickham,朴熙顺,贝尔·格里尔斯,王伍福,山田真歩,斯蒂芬·弗雷,珍妮·艾加特,尹艺锦,梅丽尔·斯特里普,黄文骞,PremChopra,欧内斯特·艾戴里欧,蓝燕,余贵美子,袁咏仪,LennyKaye,田中泯,诸葛俊逸JunyiZhuge,HaydenChristensen,StéphaneDebac,香取慎吾,曾晓夏,阿米达普·巴真,堀北真希,张玮,琳娜·海蒂,奥利佛克里斯,赵成夏,史蒂夫·卡瑞尔,KENN,刘德华,夏洛特·甘斯布,李小璐,吴莫愁,SteveJones,潘粤明,理查德·阿米蒂奇,MorganAlling,吉米·辛普森,WilliamRingström,姜超,上戸彩,艾玛·汤普森,大原櫻子,汤姆·汉克斯,IanMcKellen,吴闵硕,臼田麻美,江雨晨,贾斯汀·比伯,刘杰,加隈亜衣,高杉真宙,吉米·法伦,刘真,AlastairSooke,克里斯·康拉德,沢城みゆき,阿皮谢克·巴真,约翰·古德曼,马场良马,安娜琳·麦考德,朱莉娅·罗伯茨,吉姆·加菲根,汪东城,艾米·亚当斯,ÅsaWallander,米歇尔·莫娜汉,RuhsarÖcal,斯科特·阿金斯,黄嫀砚,马特·史密斯,三浦翔平,TimuçinEsen,杰西卡·雷恩,諸星すみれ,车太贤,金英爱,JennGotzon,DanielGuillaume,尹珍序}
+@ATTRIBUTE country {韩国,USA,捷克,印度India,中国大陆,德国,2013-12-28,香港,澳大利亚,西班牙,泰国,俄罗斯,法国,日本,比利时Belgium,比利时,丹麦,瑞典Sweden,美国,荷兰,瑞典,英国,2013-12-12,土耳其Turkey,印度,2013-12-15,新西兰,土耳其}
+@ATTRIBUTE type {,同性,以色列,纪录片,日本,家庭,爱情,悬疑,儿童,犯罪,动作,舞台艺术,喜剧,剧情,动画,短片,战争,惊悚,科幻,音乐,传记,美国,运动,冒险,历史,恐怖,古装,奇幻,歌舞,情色}
+@ATTRIBUTE release_year {2011,2013,2012}
+@ATTRIBUTE class {class_2,class_3,class_1,class_6,class_7,class_4,class_5,class_8}

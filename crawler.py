@@ -116,7 +116,7 @@ def sendRequest(opener, url, param, header, outputfile):
     else:
         req = urllib2.Request(url, data_encoded, header) 
 
-    #print "request sent"
+    print "request sent"
 
     response = opener.open(req)
     the_page = response.read()
@@ -124,22 +124,17 @@ def sendRequest(opener, url, param, header, outputfile):
         open(outputfile, "w").write(the_page)
     return the_page
 
-def parseResponse(response,output):
+def parseResponse(response,output,pageNum,temp_dir):
     global nameList
     global attr_dict
-
-    #for fn in nameList:
-    #    attr_dict[fn] = []
-
     json_obj = json.loads(response)
-
     subjects = getElementFromJson(json_obj, 'subjects')
+    movie_obj = {}
     if subjects is not None:
         num = len(subjects)
         if num > 0:
             for moive in subjects:
-		movie_obj = {}
-
+                movie_obj.clear()
                 movie_obj['title'] = getElementFromJson(moive, 'title')
                 abstract = getElementFromJson(moive, 'abstract')
                 movie_obj['release_year'] = getElementFromJson(moive, 'release_year')
@@ -147,64 +142,73 @@ def parseResponse(response,output):
                 movie_obj['rater'] = getElementFromJson(moive, 'rater')
                 movie_obj['rate'] = getElementFromJson(moive, 'rate')
 
-		strlist = url.split('/')
-		movie_obj['id'] = strlist[len(strlist) -2]
-		#print id, abstract
-		str="　"
-		str.decode("utf-8")
-		abstract.decode("utf-8") 
-		abstract = abstract.replace('/', ';') 
-		atlist = abstract.split(str)
-		#for i in range(0, len(atlist)):
-		#    print atlist[i]
-		director = atlist[0].split('<br')[0]
-		movie_obj['director'] = director.replace('导演：','')
+                strlist = url.split('/')
+                movie_obj['id'] = strlist[len(strlist) -2]
+                str="　"
+                str.decode("utf-8")
+                abstract.decode("utf-8") 
+                abstract = abstract.replace('/', ';') 
 
-		if (len(atlist) > 1):
-		    if atlist[1].find('演员') > -1:
-		        actors = atlist[1].split('<br')[0]
-		        movie_obj['actors'] = actors.replace('演员：','')
-			
-		        if (len(atlist) > 2):
-	                    movie_obj['country'] = atlist[2]
-			else:
-			    movie_obj['country'] = ''
-			    movie_obj['type'] = ''
-		        if (len(atlist) > 3):
-		            movie_obj['type'] = atlist[3]
-			else:
-			    movie_obj['type'] = ''
-			#print movie_obj['actors']	
-		    else:
-			movie_obj['actors'] = ''
-                        movie_obj['country'] = atlist[1]
-                        if (len(atlist) > 2):
-                            movie_obj['type'] = atlist[2]
-			else:
-			    movie_obj['type'] = ''
-		#print movie_obj['rate'], "***", abstract
-		if (not movie_obj['rater'] is None) and (int(movie_obj['rater']) > 0):
-		    movie_obj['class'] = convertRateToClass(movie_obj['rate'])		
-		    print "%s,%s,%s,%s,%s,%s" %(movie_obj['director'],movie_obj['actors'],movie_obj['country'],movie_obj['type'],movie_obj['release_year'],movie_obj['class'])
-		    output.write( "%s,%s,%s,%s,%s,%s" %(movie_obj['director'],movie_obj['actors'],movie_obj['country'],movie_obj['type'],movie_obj['release_year'],movie_obj['class']))
+                atlist = abstract.split(str)
+                index = 0
+                tmpstr = atlist[index].split('<br')[0]
+                fieldIndex = 0
+                field=nameList[fieldIndex]
 
-		    for featureName in nameList:
-        	        feature = movie_obj[featureName]
-        	        if feature is not None:
-			    #print feature
-			    feature = feature.replace(' ', '')
-			    feature = feature.replace('　', '')
-		            newFeature = feature.split(';')
-            		    attr_dict[featureName].extend(newFeature)
-            		    #attr = ';'.join(set(map(lambda x:x.lower(),feature)))
-        	        #else:
-            		    #attr = ''
-        		    #attr = string.replace(attr, ',', ' ')
+                if tmpstr.find('导演') > -1:
+                    movie_obj[field] = tmpstr.replace('导演：','')
+                    index += 1
+                else:
+                    movie_obj[field] = ''
 
-	#for featureName in nameList:
-	#    attrlist = attr_dict[featureName]
-	#    attrlist = list(set(attrlist))
-	#    print ('@ATTRIBUTE %s {%s}'  % (featureName, ','.join(x for x in attrlist)))	
+                fieldIndex += 1
+                field = nameList[fieldIndex]
+                if (len(atlist) >= (index + 1)): 
+                    tmpstr = atlist[index].split('<br')[0]
+                    if tmpstr.find('演员') > -1:
+                        actors = tmpstr.split('<br')[0]
+                        movie_obj[field] = actors.replace('演员：','')
+                        index += 1
+                    else:
+                        movie_obj[field] = ''
+
+                fieldIndex += 1
+                field = nameList[fieldIndex]
+                if (len(atlist) >= (index + 1)):
+                    tmpstr = atlist[index].split('<br')[0]
+                    movie_obj[field] = tmpstr
+                    index += 1
+
+                fieldIndex += 1
+                field = nameList[fieldIndex]
+                if (len(atlist) >= (index + 1)):
+                    tmpstr = atlist[index].split('<br')[0]
+                    movie_obj[field] = tmpstr
+                    index += 1
+
+                for i in range(0,5):
+                    field = nameList[i]
+                    if not field in  movie_obj.keys():
+                        movie_obj[field] = ''
+
+                if (not movie_obj['rater'] is None) and (int(movie_obj['rater']) > 0):
+                    movie_obj['class'] = convertRateToClass(movie_obj['rate'])
+                    moviefile = temp_dir + "/" + movie_obj['id'] + ".json"
+                    mf = open(moviefile, "w")
+                    json.dump(movie_obj, mf)
+                    #print abstract
+                    print "%s,%s,%s,%s,%s,%s" %(movie_obj['director'],movie_obj['actors'],movie_obj['country'],movie_obj['type'],movie_obj['release_year'],movie_obj['class'])
+                    output.write( "%s,%s,%s,%s,%s,%s\n" %(movie_obj['director'],movie_obj['actors'],movie_obj['country'],movie_obj['type'],movie_obj['release_year'],movie_obj['class']))
+
+                    for featureName in nameList:
+                        feature = movie_obj[featureName]
+                        if feature is not None:
+                            feature = feature.replace(' ', '')
+                            feature = feature.replace('　', '')
+                            newFeature = feature.split(';')
+                            attr_dict[featureName].extend(newFeature)
+        else:
+            print "The page %s is empty" % str(pageNum)
     return
 
 
@@ -242,18 +246,18 @@ def convertRateToClass(ratestr):
 	return 'class_1'
 
 
-def searchDouban(output_file):
-    output = open(output_file, "ab")
-
+def searchDouban():
     global nameList
     global attr_dict
 
     url="http://movie.douban.com/category/q"
 
     config_file, output_file, temp_dir = getConfig()
+    
+    print output_file
     opener = init(config_file, temp_dir)
-
-    totalPageNum = 20 
+    output = open(output_file, "w")
+    totalPageNum = 20
 
     output.write("@RELATION PERSON\n")
     output.write("@DATA\n")
@@ -262,27 +266,26 @@ def searchDouban(output_file):
         attr_dict[fn] = []
 
     param = {
-             "district":"",
+             #"district":"美国",
              "era":"2013",
              "category":"movie",
              "unwatched":"false",
              "available":"false",
              "sortBy":"date",
-             "page":1,
+             "page": 1,
              "ck":"null",
-             "source":"paginator"
+             #"source":"paginator"
          }
 
     for num in range(1,totalPageNum):
         param['page'] = num 
-        outputpath = temp_dir + "/" + str(num) + ".json"
-        response = sendRequest(opener,url,param,None,outputpath)
-        parseResponse(response,output)
+        #outputpath = temp_dir + "/" + str(num) + ".json"
+        response = sendRequest(opener,url,param,None,None)
+        parseResponse(response,output,num,temp_dir)
 
     printAttributes(output)
     output.close()
 
     return
 if (__name__ == '__main__'):
-    config_file, output_file, temp_dir = getConfig()
-    searchDouban(output_file)
+    searchDouban()

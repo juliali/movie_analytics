@@ -118,6 +118,7 @@ public class MysqlToArff {
             e.printStackTrace();
         } finally {
             if (stmt != null)
+
                 try {
                     stmt.close();
                 } catch (SQLException e) {

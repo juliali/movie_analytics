@@ -11,6 +11,8 @@ import java.util.HashMap;
 public class LinearRegressionRevenue {
     private HashMap<String, Float> directorMap = new HashMap<String, Float>();
     private HashMap<String, Float> actorMap = new HashMap<String, Float>();
+    private float actorAvr = 0;
+    private float directorAvr = 0;
 
     public void calculate(String name) {
         Connection conn = null;
@@ -20,26 +22,29 @@ public class LinearRegressionRevenue {
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql://192.168.3.166:3306/movie_data?characterEncoding=UTF-8", "movie", "movie");
             stmt = conn.createStatement();
-            buildAvgRateMap(stmt, rs);
+            buildAvgRevenueMap(stmt, rs);
             double[] p = estimateParameter(stmt, rs);
             testModel(stmt, rs, p);
             rs = stmt.executeQuery("select chinese_name, substring_index(director, ' ', 1) as dir, substring_index(starring, ' ', 1) as lead, " +
                     " substring_index(substring_index(starring, ' ', -2), ' ', 1) as support1, " +
                     " substring_index(substring_index(starring, ' ', -3), ' ', 1) as support2,box_office_revenue" +
-                    " from mtime_revenue where chinese_name like '%" + name +"%'");
-            while (rs.next()){
+                    " from mtime_revenue where chinese_name like '%" + name + "%'");
+            while (rs.next()) {
                 String director = rs.getString("dir");
                 String lead = rs.getString("lead");
                 String support1 = rs.getString("support1");
                 String support2 = rs.getString("support2");
                 String chineseName = rs.getString("chinese_name");
                 float box_office_revenue = rs.getFloat("box_office_revenue");
-                if (directorMap.containsKey(director) && actorMap.containsKey(lead)
-                        && actorMap.containsKey(support1) && actorMap.containsKey(support2)) {
-                    float actorRate = (actorMap.get(lead)+(actorMap.get(support1)+actorMap.get(support2))/2)/2;
-                    double predict = p[0]+p[1]*directorMap.get(director)+p[2]*actorRate;
-                    printResult(chineseName, predict, box_office_revenue);
-                }
+                float directorValue;
+                if (directorMap.containsKey(director))
+                    directorValue = directorMap.get(director);
+                else
+                    directorValue = directorAvr;
+                float actorRevenue = calculateActorRevenue(lead, support1, support2);
+                double predict = p[0] + p[1] * directorValue + p[2] * actorRevenue;
+                printResult(chineseName, predict, box_office_revenue);
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,10 +71,10 @@ public class LinearRegressionRevenue {
     }
 
     private void printResult(String chineseName, double predict, float box_office_revenue) {
-        System.out.println("movie name : " + chineseName +" predict box_office_revenue " + new DecimalFormat("#.0").format(predict) + "; real box_office_revenue :" + box_office_revenue);
+        System.out.println("movie name : " + chineseName + " predict box_office_revenue " + new DecimalFormat("#.0").format(predict) + "; real box_office_revenue :" + box_office_revenue);
     }
 
-    private void buildAvgRateMap(Statement stmt, ResultSet rs) throws SQLException {
+    private void buildAvgRevenueMap(Statement stmt, ResultSet rs) throws SQLException {
         // director avg box_office_revenue
         rs = stmt.executeQuery("select avg(box_office_revenue) as avr, substring_index(director, ' ', 1) as dir from mtime_revenue " +
                 "where votes>=100 and release_date<'2013-01-01' " +
@@ -96,7 +101,7 @@ public class LinearRegressionRevenue {
             String actor = rs.getString("support");
             float box_office_revenue = rs.getFloat("avr");
             if (actorMap.containsKey(actor))
-                actorMap.put(actor, (actorMap.get(actor)+box_office_revenue)/2);
+                actorMap.put(actor, (actorMap.get(actor) + box_office_revenue) / 2);
             actorMap.put(rs.getString("support"), box_office_revenue);
         }
 
@@ -108,7 +113,7 @@ public class LinearRegressionRevenue {
             String actor = rs.getString("lead");
             float box_office_revenue = rs.getFloat("avr");
             if (actorMap.containsKey(actor))
-                actorMap.put(actor, (actorMap.get(actor)+box_office_revenue)/2);
+                actorMap.put(actor, (actorMap.get(actor) + box_office_revenue) / 2);
             actorMap.put(actor, box_office_revenue);
         }
     }
@@ -128,19 +133,22 @@ public class LinearRegressionRevenue {
             String support1 = rs.getString("support1");
             String support2 = rs.getString("support2");
             Float box_office_revenue = rs.getFloat("box_office_revenue");
-            if (directorMap.containsKey(director) && actorMap.containsKey(lead)
-                    && actorMap.containsKey(support1) && actorMap.containsKey(support2)) {
-                dList.add(directorMap.get(director).doubleValue());
-                double actorRate = (actorMap.get(lead)+(actorMap.get(support1)+actorMap.get(support2))/2)/2;
-                aList.add(actorRate);
-                rList.add(box_office_revenue.doubleValue());
-            }
+            Float directorValue;
+            if (directorMap.containsKey(director))
+                directorValue = directorMap.get(director);
+            else
+                directorValue = directorAvr;
+            double actorRevenue = calculateActorRevenue(lead, support1, support2);
+            dList.add(directorValue.doubleValue());
+            aList.add(actorRevenue);
+            rList.add(box_office_revenue.doubleValue());
+
         }
         int m = 2;
         int n = rList.size();
         double[][] x = new double[n][m];
         double[] y = new double[n];
-        for (int i=0; i<rList.size(); i++) {
+        for (int i = 0; i < rList.size(); i++) {
             x[i][0] = dList.get(i);
             x[i][1] = aList.get(i);
             y[i] = rList.get(i);
@@ -155,8 +163,7 @@ public class LinearRegressionRevenue {
                 "substring_index(substring_index(starring, ' ', -2), ' ', 1) as support1, " +
                 "substring_index(substring_index(starring, ' ', -3), ' ', 1) as support2, box_office_revenue " +
                 "from mtime_revenue where votes>=100 and release_date >= '2013-01-01' and release_date<'2014-01-01'");
-        int success = 0;
-        int fail = 0;
+
         while (rs.next()) {
             String name = rs.getString("chinese_name");
             String director = rs.getString("dir");
@@ -164,18 +171,38 @@ public class LinearRegressionRevenue {
             String support1 = rs.getString("support1");
             String support2 = rs.getString("support2");
             Float box_office_revenue = rs.getFloat("box_office_revenue");
-            if (directorMap.containsKey(director) && actorMap.containsKey(lead)
-                    && actorMap.containsKey(support1) && actorMap.containsKey(support2)) {
-                double actorRate = (actorMap.get(lead)+(actorMap.get(support1)+actorMap.get(support2))/2)/2;
-                double predict = p[0]+p[1]*directorMap.get(director)+p[2]*actorRate;
-                System.out.println(name + " : predict box_office_revenue " + predict + " , real box_office_revenue " + box_office_revenue );
+            float directorValue;
+            if (directorMap.containsKey(director))
+                directorValue = directorMap.get(director);
+            else
+                directorValue = directorAvr;
+            float actorRevenue = calculateActorRevenue(lead, support1, support2);
+            double predict = p[0] + p[1] * directorValue + p[2] * actorRevenue;
+            System.out.println(name + " : predict box_office_revenue " + predict + " , real box_office_revenue " + box_office_revenue);
 
-            } else {
-                fail++;
-                //System.out.println(name + " :  " + director + "  " + lead );
-            }
+
         }
-        System.out.println(fail+ " movies cant not be predicted");
+    }
+
+
+    private float calculateActorRevenue(String lead, String support1, String support2) {
+        float leadValue;
+        if (actorMap.containsKey(lead))
+            leadValue = actorMap.get(lead);
+        else
+            leadValue = actorAvr;
+        float support1Value;
+        if (actorMap.containsKey(support1))
+            support1Value = actorMap.get(support1);
+        else
+            support1Value = actorAvr;
+        float support2Value;
+        if (actorMap.containsKey(support2))
+            support2Value = actorMap.get(support2);
+        else
+            support2Value = actorAvr;
+        float actorRevenue = (leadValue + (support1Value + support2Value) / 2) / 2;
+        return actorRevenue;
     }
 
     public static void main(String[] args) {

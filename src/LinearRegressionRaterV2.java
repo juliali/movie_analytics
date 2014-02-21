@@ -12,6 +12,8 @@ public class LinearRegressionRaterV2 {
 
     private HashMap<String, Float> directorMap = new HashMap<String, Float>();
     private HashMap<String, Float> actorMap = new HashMap<String, Float>();
+    private float actorAvr = 0;
+    private float directorAvr = 0;
 
     public void calculate(String name) {
         Connection conn = null;
@@ -35,12 +37,14 @@ public class LinearRegressionRaterV2 {
                 String support2 = rs.getString("support2");
                 String chineseName = rs.getString("chinese_name");
                 float rate = rs.getFloat("rate");
-                if (directorMap.containsKey(director) && actorMap.containsKey(lead)
-                        && actorMap.containsKey(support1) && actorMap.containsKey(support2)) {
-                    float actorRate = (actorMap.get(lead)+(actorMap.get(support1)+actorMap.get(support2))/2)/2;
-                    double predict = p[0]+p[1]*directorMap.get(director)+p[2]*actorRate;
-                    printResult(chineseName, predict, rate);
-                }
+                float directorValue;
+                if (directorMap.containsKey(director))
+                    directorValue = directorMap.get(director);
+                else
+                    directorValue = directorAvr;
+                float actorRate = calculateActorRate(lead, support1, support2);
+                double predict = p[0]+p[1]*directorValue+p[2]*actorRate;
+                printResult(chineseName, predict, rate);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,6 +116,12 @@ public class LinearRegressionRaterV2 {
                 actorMap.put(actor, (actorMap.get(actor)+rate)/2);
             actorMap.put(actor, rate);
         }
+        for (float value : directorMap.values())
+            directorAvr += value;
+        directorAvr /= directorMap.size();
+        for (float value : actorMap.values())
+            actorAvr += value;
+        actorAvr /= actorMap.size();
     }
 
 
@@ -129,13 +139,16 @@ public class LinearRegressionRaterV2 {
             String support1 = rs.getString("support1");
             String support2 = rs.getString("support2");
             Float rate = rs.getFloat("rate");
-            if (directorMap.containsKey(director) && actorMap.containsKey(lead)
-                    && actorMap.containsKey(support1) && actorMap.containsKey(support2)) {
-                dList.add(directorMap.get(director).doubleValue());
-                double actorRate = (actorMap.get(lead)+(actorMap.get(support1)+actorMap.get(support2))/2)/2;
-                aList.add(actorRate);
-                rList.add(rate.doubleValue());
-            }
+            Float directorValue;
+            if (directorMap.containsKey(director))
+                directorValue = directorMap.get(director);
+            else
+                directorValue = directorAvr;
+            double actorRate = calculateActorRate(lead, support1, support2);
+            dList.add(directorValue.doubleValue());
+            aList.add(actorRate);
+            rList.add(rate.doubleValue());
+
         }
         int m = 2;
         int n = rList.size();
@@ -165,25 +178,43 @@ public class LinearRegressionRaterV2 {
             String support1 = rs.getString("support1");
             String support2 = rs.getString("support2");
             Float rate = rs.getFloat("rate");
-            if (directorMap.containsKey(director) && actorMap.containsKey(lead)
-                    && actorMap.containsKey(support1) && actorMap.containsKey(support2)) {
-                double actorRate = (actorMap.get(lead)+(actorMap.get(support1)+actorMap.get(support2))/2)/2;
-                double predict = p[0]+p[1]*directorMap.get(director)+p[2]*actorRate;
-                if (rate-predict >= 1 || predict - rate <=-1)
-                    System.out.println(name + " : predict rate " + predict + " , real rate " + rate );
-                else
-                    success++;
-            } else {
-                fail++;
-                //System.out.println(name + " :  " + director + "  " + lead );
-            }
+            float directorValue;
+            if (directorMap.containsKey(director))
+                directorValue = directorMap.get(director);
+            else
+                directorValue = directorAvr;
+            float actorRate = calculateActorRate(lead, support1, support2);
+            double predict = p[0]+p[1]*directorValue+p[2]*actorRate;
+            if (rate-predict >= 1 || predict - rate <=-1)
+                System.out.println(name + " : predict rate " + predict + " , real rate " + rate );
+            else
+                success++;
         }
         System.out.println(success + " movies are predicted as expected");
-        System.out.println(fail+ " movies cant not be predicted");
+    }
+
+    private float calculateActorRate(String lead, String support1, String support2) {
+        float leadValue;
+        if (actorMap.containsKey(lead))
+            leadValue = actorMap.get(lead);
+        else
+            leadValue = actorAvr;
+        float support1Value;
+        if (actorMap.containsKey(support1))
+            support1Value = actorMap.get(support1);
+        else
+            support1Value = actorAvr;
+        float support2Value;
+        if (actorMap.containsKey(support2))
+            support2Value = actorMap.get(support2);
+        else
+            support2Value = actorAvr;
+        float actorRate = (leadValue+(support1Value+support2Value)/2)/2;
+        return actorRate;
     }
 
     public static void main(String[] args) {
-        new LinearRegressionRaterV2().calculate("泰囧");
+        new LinearRegressionRaterV2().calculate("霍比特人");
 
     }
 }

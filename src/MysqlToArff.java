@@ -8,11 +8,11 @@ import java.util.*;
  * Created by pivotal on 2/19/14.
  */
 public class MysqlToArff {
-    private static final int testRecordNum = 200;
+    private static final int testRecordNum = 500;
 
     public static void main(String[] args) {
         HashMap<String, HashSet<String>> map = new HashMap<String, HashSet<String>>();
-        String[] attributeList = {"director", "starring", "type", "release_date", "region", "company", "certification", "rate"};
+        String[] attributeList = {"director", "starring", "type", "release_date", "region", "certification", "rate"};
         for (String attr : attributeList) {
             map.put(attr, new HashSet<String>());
         }

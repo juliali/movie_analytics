@@ -1,0 +1,117 @@
+<!--
+  -->
+<project name="movieApp" default="compile" basedir=".">
+
+    <property file="build.properties"/>
+    <property file="${user.home}/build.properties"/>
+
+    <property name="app.name" value="movieApp"/>
+    <property name="app.version" value="0.1-dev"/>
+    <property name="build.home" value="${basedir}/build"/>
+    <property name="app.depth" value="../"/>
+    <property name="webapps.home" value="${app.depth}/install/opt/cetas/webapps"/>
+    <property name="applibs.home" value="${app.depth}/install/opt/cetas/java"/>
+    <property name="dist.home" value="${basedir}/dist"/>
+    <property name="docs.home" value="${basedir}/docs"/>
+    <property name="src.home" value="${basedir}/src"/>
+    <property name="web.home" value="${basedir}/web"/>
+    <property name="conf.home" value="${basedir}/conf"/>
+    <property name="war.name" value="movieApp"/>
+    <property name="jar.name" value="movieApp"/>
+
+    <property name="compile.debug" value="true"/>
+    <property name="compile.deprecation" value="false"/>
+    <property name="compile.optimize" value="true"/>
+
+    <path id="compile.classpath">
+        <fileset dir="${basedir}/web/WEB-INF/lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+
+    <target name="all" depends="clean, install" description="Clean build and dist directories, then compile"/>
+
+    <target name="clean"
+            description="Delete old build and dist directories">
+        <delete dir="${build.home}"/>
+        <delete dir="${dist.home}"/>
+        <delete dir="web/WEB-INF/classes"/>
+    </target>
+
+    <target name="prepare" depends="clean">
+        <mkdir dir="${build.home}"/>
+        <mkdir dir="${dist.home}"/>
+    </target>
+
+    <target name="compile" depends="prepare" description="Compile Java sources">
+
+        <!-- Compile Java classes as necessary -->
+        <mkdir dir="${build.home}/classes"/>
+        <javac
+                destdir="${build.home}/classes"
+                debug="${compile.debug}"
+                deprecation="${compile.deprecation}"
+                includeantruntime="false"
+                optimize="${compile.optimize}">
+
+            <src>
+                <pathelement location="${src.home}/" />
+                <extdirs path="${src.home}/com" />
+            </src>
+
+            <classpath refid="compile.classpath"/>
+        </javac>
+
+        <!-- Copy application resources -->
+        <copy todir="${build.home}/classes">
+            <fileset dir="${src.home}" excludes="**/*.java"/>
+        </copy>
+    </target>
+    <target name="dist" depends="compile"
+            description="Create binary distribution">
+        <mkdir dir="web/WEB-INF/classes"/>
+        <copy todir="web/WEB-INF/classes">
+            <fileset dir="${build.home}/classes">
+                <exclude name="com/**" />
+            </fileset>
+        </copy>
+        <war destfile="${dist.home}/${war.name}.war" webxml="web/WEB-INF/web.xml">
+            <classes dir="web/WEB-INF/classes"/>
+            <lib dir="web/WEB-INF/lib"></lib>
+            <fileset dir="web/"> 
+               <include name="**/*.jsp"/>
+            </fileset>
+        </war>
+    </target>
+
+    <target name="install" depends="dist"
+            description="Install application to servlet container">
+
+        <mkdir   dir="${webapps.home}"/>
+        <copy todir="${webapps.home}/" file="${dist.home}/${war.name}.war"/>
+
+    </target>
+
+    <target name="compile.all" depends="prepare" description="Compile Java sources">
+        <!-- Compile Java classes as necessary -->
+        <mkdir dir="${build.home}/classes"/>
+        <javac  srcdir="${src.home}"
+                destdir="${build.home}/classes"
+                debug="${compile.debug}"
+                deprecation="${compile.deprecation}"
+                includeantruntime="false"
+                optimize="${compile.optimize}">
+            <classpath refid="compile.wadl.classpath"/>
+        </javac>
+
+        <!-- Copy application resources -->
+        <copy todir="${build.home}/classes">
+            <fileset dir="${src.home}" excludes="**/*.java"/>
+        </copy>
+    </target>
+
+    <target name="buildjar" depends="compile.all" description="build a jar file for the module">
+        <jar destfile="${dist.home}/${jar.name}.jar" basedir="${build.home}/classes"/>
+    </target>
+</project>

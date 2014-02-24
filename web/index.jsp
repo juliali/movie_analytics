@@ -7,7 +7,7 @@
 <body>
     <form action="revenue" method="post">
         <input type="text" name="name" />
-        <input type="submit" value="submit  myForm" />
+        <input type="submit" value="submit movie name" />
     </form>
 </body>
 </html>

@@ -4,28 +4,35 @@ import java.sql.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by pivotal on 2/20/14.
  */
 public class LinearRegressionRaterV2 {
 
+    private Connection conn = null;
     private HashMap<String, Float> directorMap = new HashMap<String, Float>();
     private HashMap<String, Float> actorMap = new HashMap<String, Float>();
     private float actorAvr = 0;
     private float directorAvr = 0;
 
-    public void calculate(String name) {
-        Connection conn = null;
+    public LinearRegressionRaterV2(Connection conn) {
+        this.conn = conn;
+    }
+
+    public Map<String, Double> calculate(String name) {
+
         Statement stmt = null;
         ResultSet rs = null;
+        Map<String, Double> map = new HashMap<String, Double>();
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://192.168.3.166:3306/movie_data?characterEncoding=UTF-8", "movie", "movie");
+//            Class.forName("com.mysql.jdbc.Driver");
+//            conn = DriverManager.getConnection("jdbc:mysql://192.168.3.166:3306/movie_data?characterEncoding=UTF-8", "movie", "movie");
             stmt = conn.createStatement();
             buildAvgRateMap(stmt, rs);
             double[] p = estimateParameter(stmt, rs);
-            testModel(stmt, rs, p);
+//            testModel(stmt, rs, p);
             rs = stmt.executeQuery("select chinese_name, substring_index(director, ' ', 1) as dir, substring_index(starring, ' ', 1) as lead, " +
                     " substring_index(substring_index(starring, ' ', -2), ' ', 1) as support1, " +
                     " substring_index(substring_index(starring, ' ', -3), ' ', 1) as support2,rate" +
@@ -44,10 +51,13 @@ public class LinearRegressionRaterV2 {
                     directorValue = directorAvr;
                 float actorRate = calculateActorRate(lead, support1, support2);
                 double predict = p[0]+p[1]*directorValue+p[2]*actorRate;
-                printResult(chineseName, predict, rate);
+                map.put(chineseName, predict);
+                //printResult(chineseName, predict, rate);
             }
+            return map;
         } catch (Exception e) {
             e.printStackTrace();
+            return map;
         } finally {
             if (rs != null)
                 try {
@@ -58,12 +68,6 @@ public class LinearRegressionRaterV2 {
             if (stmt != null)
                 try {
                     stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            if (conn != null)
-                try {
-                    conn.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -214,7 +218,7 @@ public class LinearRegressionRaterV2 {
     }
 
     public static void main(String[] args) {
-        new LinearRegressionRaterV2().calculate("霍比特人");
+        //new LinearRegressionRaterV2().calculate("霍比特人");
 
     }
 }

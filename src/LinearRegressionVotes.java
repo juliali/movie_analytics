@@ -4,6 +4,7 @@ import java.sql.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by pivotal on 2/21/14.
@@ -13,21 +14,24 @@ public class LinearRegressionVotes {
     private HashMap<String, Integer> actorMap = new HashMap<String, Integer>();
     private int actorAvr = 0;
     private int directorAvr = 0;
+    private Connection conn;
 
-    public int calculate(String name) {
-        Connection conn = null;
+    public LinearRegressionVotes(Connection conn) {
+        this.conn = conn;
+    }
+
+    public Map<String, Integer> calculate(String name) {
         Statement stmt = null;
         ResultSet rs = null;
+        Map<String, Integer> map = new HashMap<String, Integer>();
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://192.168.3.166:3306/movie_data?characterEncoding=UTF-8", "movie", "movie");
             stmt = conn.createStatement();
             buildAvgVotesMap(stmt, rs);
             double[] p = estimateParameter(stmt, rs);
             rs = stmt.executeQuery("select chinese_name, substring_index(director, ' ', 1) as dir, substring_index(starring, ' ', 1) as lead, " +
                     " substring_index(substring_index(starring, ' ', -2), ' ', 1) as support1, " +
                     " substring_index(substring_index(starring, ' ', -3), ' ', 1) as support2, votes" +
-                    " from mtime_revenue where chinese_name like '%" + name + "%'");
+                    " from movie where chinese_name like '%" + name + "%'");
             while (rs.next()) {
                 String director = rs.getString("dir");
                 String lead = rs.getString("lead");
@@ -42,12 +46,12 @@ public class LinearRegressionVotes {
                     directorValue = directorAvr;
                 float actorVotes = calculateActorVotes(lead, support1, support2);
                 Double predict = p[0] + p[1] * directorValue + p[2] * actorVotes;
-                return predict.intValue();
+                map.put(chineseName, predict.intValue());
             }
-            return 0;
+            return map;
         } catch (Exception e) {
             e.printStackTrace();
-            return 0;
+            return map;
         } finally {
             if (rs != null)
                 try {
@@ -58,12 +62,6 @@ public class LinearRegressionVotes {
             if (stmt != null)
                 try {
                     stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            if (conn != null)
-                try {
-                    conn.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -206,6 +204,6 @@ public class LinearRegressionVotes {
     }
 
     public static void main(String[] args) {
-        System.out.print(new LRVotesToRevenue().predictRevenueByVotes(new LinearRegressionVotes().calculate("美国队长")));
+        //System.out.print(new LRVotesToRevenue().predictRevenueByVotes(new LinearRegressionVotes().calculate("美国队长")));
     }
 }

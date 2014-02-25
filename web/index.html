@@ -11,7 +11,12 @@
                 if (e.which == 13 ) {
                     e.preventDefault();
                     $.post('revenue', {name: $('input[type=text]').value}, function(result){
-                        $('#revenue').text(eval("("+result+")").revenue);
+                        var r = eval("("+result+")");
+                        $('thead').show();
+                        $('tbody').empty();
+                        $.each(r, function(i, d){
+                            $('tbody').append("<tr><td>"+ d.movieName+"</td><td>"+ d.movieRate+"</td><td>"+ d.revenue+"</td></tr>")
+                        });
                     });
                 }
             });
@@ -22,7 +27,16 @@
     <div id="search">
             <input name="q" type="text" size="100" placeholder="Movie Name..." />
         <div id="result">
-            <label>Revenue: RMB </label><span id="revenue"></span>
+            <table>
+                <thead style="display: none;">
+                    <tr>
+                        <th>Movie Name</th>
+                        <th>Rate</th>
+                        <th>Revenue</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
 

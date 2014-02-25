@@ -80,7 +80,7 @@
             <classes dir="web/WEB-INF/classes"/>
             <lib dir="web/WEB-INF/lib"></lib>
             <fileset dir="web/"> 
-               <include name="**/*.jsp"/>
+               <include name="**/*"/>
             </fileset>
         </war>
     </target>

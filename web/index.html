@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Movie Revenue Prediction</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <script type="text/javascript" src="js/jquery-1.11.0.min.js" ></script>
+    <script>
+        $(document).ready(function(){
+            $('input[type=text]').keypress(function(e){
+                if (e.which == 13 ) {
+                    e.preventDefault();
+                    $.post('revenue', {name: $('input[type=text]').value}, function(result){
+                        $('#revenue').text(eval("("+result+")").revenue);
+                    });
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="search">
+            <input name="q" type="text" size="100" placeholder="Movie Name..." />
+        <div id="result">
+            <label>Revenue: RMB </label><span id="revenue"></span>
+        </div>
+    </div>
+
+</body>
+</html>

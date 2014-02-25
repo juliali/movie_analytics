@@ -42,7 +42,7 @@ public class MovieAnalyticApp extends javax.servlet.http.HttpServlet implements 
 //                objectMapper.readValue(svcConfStr, Map.class);
         String name = request.getParameter("name");
         int revenue = new LRVotesToRevenue().predictRevenueByVotes(new LinearRegressionVotes().calculate(name));
-        response.sendRedirect("result.jsp?revenue=" + revenue);
+        response.getWriter().write("{revenue: "+revenue+"}");
     }
 
 

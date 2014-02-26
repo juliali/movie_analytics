@@ -10,12 +10,12 @@
             $('input[type=text]').keypress(function(e){
                 if (e.which == 13 ) {
                     e.preventDefault();
-                    $.post('revenue', {name: $('input[type=text]').value}, function(result){
+                    $.post('revenue', {name: $('input[type=text]')[0].value}, function(result){
                         var r = eval("("+result+")");
                         $('thead').show();
                         $('tbody').empty();
                         $.each(r, function(i, d){
-                            $('tbody').append("<tr><td>"+ d.movieName+"</td><td>"+ d.movieRate+"</td><td>"+ d.revenue+"</td></tr>")
+                            $('tbody').append("<tr><td>"+ d.movieName+"</td><td>"+ d.rate+"</td><td>"+ d.revenue+"</td></tr>")
                         });
                     });
                 }

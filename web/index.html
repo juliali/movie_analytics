@@ -15,7 +15,7 @@
                         $('thead').show();
                         $('tbody').empty();
                         $.each(r, function(i, d){
-                            $('tbody').append("<tr><td>"+ d.movieName+"</td><td>"+ d.rate+"</td><td>"+ d.revenue+"</td></tr>")
+                            $('tbody').append("<tr><td>"+ d.movieName+"</td><td>"+ d.predictRate+"</td><td>"+ d.realRate+"</td><td>"+ d.predictRevenue+"</td><td>"+ d.realRevenue+"</td><td>"+ d.releaseDate+"</td></tr>")
                         });
                     });
                 }
@@ -31,8 +31,12 @@
                 <thead style="display: none;">
                     <tr>
                         <th>Movie Name</th>
-                        <th>Rate</th>
-                        <th>Revenue</th>
+                        <th>Predict Rate</th>
+                        <th>Actual Rate</th>
+                        <th>Predict Revenue</th>
+                        <th>Actual Revenue</th>
+                        <th>Release Date</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody></tbody>

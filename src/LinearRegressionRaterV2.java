@@ -21,21 +21,19 @@ public class LinearRegressionRaterV2 {
         this.conn = conn;
     }
 
-    public Map<String, Double> calculate(String name) {
+    public Map<String, Object[]> calculate(String name) {
 
         Statement stmt = null;
         ResultSet rs = null;
-        Map<String, Double> map = new HashMap<String, Double>();
+        Map<String, Object[]> map = new HashMap<String, Object[]>();
         try {
-//            Class.forName("com.mysql.jdbc.Driver");
-//            conn = DriverManager.getConnection("jdbc:mysql://192.168.3.166:3306/movie_data?characterEncoding=UTF-8", "movie", "movie");
             stmt = conn.createStatement();
             buildAvgRateMap(stmt, rs);
             double[] p = estimateParameter(stmt, rs);
-//            testModel(stmt, rs, p);
             rs = stmt.executeQuery("select chinese_name, substring_index(director, ' ', 1) as dir, substring_index(starring, ' ', 1) as lead, " +
                     " substring_index(substring_index(starring, ' ', -2), ' ', 1) as support1, " +
-                    " substring_index(substring_index(starring, ' ', -3), ' ', 1) as support2,rate" +
+                    " substring_index(substring_index(starring, ' ', -3), ' ', 1) as support2, " +
+                    " rate, release_date " +
                     " from movie where chinese_name like '%" + name +"%'");
             while (rs.next()){
                 String director = rs.getString("dir");
@@ -44,6 +42,7 @@ public class LinearRegressionRaterV2 {
                 String support2 = rs.getString("support2");
                 String chineseName = rs.getString("chinese_name");
                 float rate = rs.getFloat("rate");
+                Date date = rs.getDate("release_date");
                 float directorValue;
                 if (directorMap.containsKey(director))
                     directorValue = directorMap.get(director);
@@ -51,8 +50,8 @@ public class LinearRegressionRaterV2 {
                     directorValue = directorAvr;
                 float actorRate = calculateActorRate(lead, support1, support2);
                 double predict = p[0]+p[1]*directorValue+p[2]*actorRate;
-                map.put(chineseName, predict);
-                //printResult(chineseName, predict, rate);
+                Object[] values = new Object[]{predict, rate, date};
+                map.put(chineseName, values);
             }
             return map;
         } catch (Exception e) {

@@ -13,17 +13,23 @@ public class LRVotesToRevenue {
 
     private ArrayList<Integer> vList = new ArrayList<Integer>();
     private ArrayList<Integer> rList = new ArrayList<Integer>();
+    private Map<String, Integer> revenueMap = new HashMap<String, Integer>();
     private Connection conn = null;
 
     public LRVotesToRevenue(Connection conn) {
         this.conn = conn;
     }
 
-    public Map<String, Integer> predictRevenueByVotes(Map<String, Integer> map) {
+    public Map<String, int[]> predictRevenueByVotes(Map<String, Integer> map) {
         double[] p = estimateParameters();
-        Map<String, Integer> result = new HashMap<String, Integer>();
+        Map<String, int[]> result = new HashMap<String, int[]>();
         for (Map.Entry<String, Integer> entry : map.entrySet()) {
-            result.put(entry.getKey(), Double.valueOf(p[0]+p[1]*entry.getValue()).intValue());
+            int predict = Double.valueOf(p[0]+p[1]*entry.getValue()).intValue();
+            int real = 0;
+            if(revenueMap.containsKey(entry.getKey()))
+                real = revenueMap.get(entry.getKey());
+            int[] values = new int[] {predict, real};
+            result.put(entry.getKey(), values);
         }
         return result;
     }
@@ -37,6 +43,7 @@ public class LRVotesToRevenue {
             while (rs.next()) {
                 vList.add(rs.getInt("votes"));
                 rList.add(rs.getInt("box_office_revenue"));
+                revenueMap.put(rs.getString("chinese_name"), rs.getInt("box_office_revenue"));
             }
             int m = 1;
             int n = rList.size();

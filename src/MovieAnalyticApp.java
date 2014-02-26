@@ -1,5 +1,4 @@
-import java.io.PrintWriter;
-import java.net.URLEncoder;
+
 import java.sql.Connection;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jettison.json.JSONException;
@@ -38,22 +37,26 @@ public class MovieAnalyticApp extends javax.servlet.http.HttpServlet implements 
         Connection conn = null;
         try {
             conn = buildMysqlConnection();
-            Map<String, Double> rateMap = new LinearRegressionRaterV2(conn).calculate(name);
-            Map<String, Integer> revenueMap = new LRVotesToRevenue(conn).predictRevenueByVotes(new LinearRegressionVotes(conn).calculate(name));
+            Map<String, Object[]> rateMap = new LinearRegressionRaterV2(conn).calculate(name);
+            Map<String, int[]> revenueMap = new LRVotesToRevenue(conn).predictRevenueByVotes(new LinearRegressionVotes(conn).calculate(name));
             response.setCharacterEncoding("UTF-8");
             response.setHeader("content-type","text/html;charset=UTF-8");
             String r = "[";
-            for (Map.Entry<String, Double> entry : rateMap.entrySet()) {
+            for (Map.Entry<String, Object[]> entry : rateMap.entrySet()) {
                 String movieName = entry.getKey();
-                String movieRate = format.format(entry.getValue());
-                Integer movieRevenue = revenueMap.get(movieName);
+                String predictRate = format.format(entry.getValue()[0]);
+                String realRate = entry.getValue()[1].toString();
+                String releaseDate = entry.getValue()[2].toString();
+                Integer predictRevenue = revenueMap.get(movieName)[0];
+                Integer realRevenue = revenueMap.get(movieName)[1];
                 if(r.length() == 1){
-                    r+="{movieName: \""+movieName+"\", rate: "+movieRate+", revenue: "+movieRevenue+"}";
+                    r+="{movieName: \""+movieName+"\", predictRate: "+predictRate+", realRate: "+realRate+", predictRevenue: "+predictRevenue+", realRevenue: "+realRevenue+", releaseDate: "+releaseDate+"}";
                 }else{
-                    r+=",{movieName: \""+movieName+"\", rate: "+movieRate+", revenue: "+movieRevenue+"}";
+                    r+=",{movieName: \""+movieName+"\", predictRate: "+predictRate+", realRate: "+realRate+", predictRevenue: "+predictRevenue+", realRevenue: "+realRevenue+", releaseDate: "+releaseDate+"}";
                 }
             }
             r+="]";
+            System.out.println(r);
             response.getWriter().write(r);
         } catch (Exception e) {
             e.printStackTrace();

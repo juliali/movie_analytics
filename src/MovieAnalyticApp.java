@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -46,7 +47,9 @@ public class MovieAnalyticApp extends javax.servlet.http.HttpServlet implements 
                 String movieName = entry.getKey();
                 String predictRate = format.format(entry.getValue()[0]);
                 String realRate = entry.getValue()[1].toString();
-                String releaseDate = entry.getValue()[2].toString();
+                String releaseDate = null;
+                if (entry.getValue()[2] != null)
+                    releaseDate = ((Date)entry.getValue()[2]).toString().substring(0,4);
                 Integer predictRevenue = revenueMap.get(movieName)[0];
                 Integer realRevenue = revenueMap.get(movieName)[1];
                 if(r.length() == 1){

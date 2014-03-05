@@ -11,6 +11,7 @@ import java.util.*;
  * Created by Julia on 3/4/14.
  */
 public class DataSetGenerator {
+    public static final DBFieldType[] paramFieldTypes = {DBFieldType.String, DBFieldType.String, DBFieldType.String, DBFieldType.String};
     public static final String[] paramFields = {"director", "starring", "type", "region"};
     public static final String resultFieldName = "revenue";
 

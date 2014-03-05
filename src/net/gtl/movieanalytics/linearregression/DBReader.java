@@ -30,7 +30,9 @@ public class DBReader {
 
 
     private String tableName = "mtime_revenue_3";
-    private String condition = numericField + " IS NOT NULL and " + numericField + " > 0";
+    private String condition = numericField + " IS NOT NULL and " + numericField + " > 0"
+            + " and director <> '' and length(director) != character_length(director) "
+            + " and starring <> '' and length(starring) != character_length(starring) ";
     private String[] fieldNames = {idStr, "chinese_name", "director", "starring", "rate", "release_date", "type", "region", "votes", numericField};
 
 
@@ -152,9 +154,25 @@ public class DBReader {
 
             String fieldName = DataSetGenerator.paramFields[i];
             String newFieldName = fieldName + "_new";
-            String query = "select avg(" + numericField + ") as " +  valueFieldName + ", substring_index(" + fieldName + ", ' ', 1) as " + newFieldName + " from "
-                    + tableName +  " where " + condition + " and " + commonCondition + " group by " + newFieldName
-                    + " having " + newFieldName+ "<>'' and length(" + newFieldName + ") != character_length(" + newFieldName + ")";
+
+            String newFieldDef = "";
+
+            DBFieldType fieldType =  DataSetGenerator.paramFieldTypes[i];
+            if (fieldType == DBFieldType.String) {
+                newFieldDef = "substring_index(" + fieldName + ", ' ', 1) as " + newFieldName;
+            } else if (fieldType == DBFieldType.Numeric) {
+                newFieldDef = fieldName + " as " + newFieldName;
+            } else if (fieldType == DBFieldType.Date) {
+                newFieldDef = "substring_index(" + fieldName + ", '-', 1) as " + newFieldName;
+            }
+
+            String query = "select avg(" + numericField + ") as " +  valueFieldName + ", " + newFieldDef + " from "
+                    + tableName +  " where " + condition + " and " + commonCondition + " group by " + newFieldName;
+
+            if (fieldType == DBFieldType.String) {
+                    query += " having " + newFieldName+ "<>''";
+                    //query += " and length(" + newFieldName + ") != character_length(" + newFieldName + ")";
+            }
 
             Map<String, Float> map = getOneDimension(query, newFieldName, valueFieldName);
             numericValues.put(fieldName, map);
@@ -194,7 +212,7 @@ public class DBReader {
             Map<String, Object> map = testSet.get(i);
             for (int j = 0; j < DataSetGenerator.paramFields.length; j ++) {
                 String fieldName = DataSetGenerator.paramFields[j];
-                String itemName = (String) map.get(fieldName);
+                String itemName = "" + map.get(fieldName);
 
                 float numbericValue = 0;
 

@@ -5,7 +5,7 @@ import org.jsoup.select.Elements;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;s
+import java.net.URL;
 import java.sql.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

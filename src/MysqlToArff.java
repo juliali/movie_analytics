@@ -157,6 +157,56 @@ public class MysqlToArff {
         bw.flush();
     }
 
+    private static String rateToClass2(float rate) {
+        if (rate >= 0 && rate < 3.5)
+            return "0-3.4";
+        else if (rate >= 3.5 && rate < 5.5)
+            return "3.5-5.4";
+        else if (rate >= 5.5 && rate < 6.1)
+            return "5.5-6";
+        else if (rate >= 6.1 && rate < 6.5)
+            return "6.1-6.4";
+        else if (rate >= 6.5 && rate < 6.7)
+            return "6.5-6.6";
+        else if (rate >= 6.7 && rate < 6.8)
+            return "6.7";
+        else if (rate >= 6.8 && rate < 6.9)
+            return "6.8";
+        else if (rate >= 6.9 && rate < 7 )
+            return "6.9";
+        else if (rate >= 7 && rate < 7.1)
+            return "7";
+        else if (rate >= 7.1 && rate < 7.2)
+            return "7.1";
+        else if (rate >= 7.2 && rate < 7.3)
+            return "7.2";
+        else if (rate >= 7.3 && rate < 7.4)
+            return "7.3";
+        else if (rate >= 7.4 && rate < 7.5)
+            return "7.4";
+        else if (rate >= 7.5 && rate < 7.6)
+            return "7.5";
+        else if (rate >= 7.6 && rate < 7.7)
+            return "7.6";
+        else if (rate >= 7.7 && rate < 7.8)
+            return "7.7";
+        else if (rate >= 7.8 && rate < 7.9)
+            return "7.8";
+        else if (rate >= 7.9 && rate < 8)
+            return "7.9";
+        else if (rate >= 8 && rate < 8.1)
+            return "8";
+        else if (rate >= 8.1 && rate < 8.2)
+            return "8.1";
+        else if (rate >= 8.2 && rate < 8.3)
+            return "8.2-8.3";
+        else if (rate >= 8.3 && rate < 8.7)
+            return "8.3-8.6";
+        else if (rate >= 8.7 && rate <= 10)
+            return "8.7-10";
+        return "class_n";
+    }
+
     private static String rateToClass(float rate) {
         /*if (rate < 6)
             return "class_3";

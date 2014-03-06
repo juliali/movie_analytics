@@ -11,13 +11,17 @@ import java.util.*;
  * Created by Julia on 3/4/14.
  */
 public class DataSetGenerator {
+
     public static final DBFieldType[] paramFieldTypes = {DBFieldType.String, DBFieldType.String, DBFieldType.String, DBFieldType.String};
-    public static final String[] paramFields = {"director", "starring", "type", "region"};
+    public static final String[] paramFields = {"director", "starring", "type", "company"};
+    public static final int[] paramFieldItemNumber = {1, 3, 2, 2, 1};
+
+
     public static final String resultFieldName = "revenue";
 
     private static final double testRecordPercentage = 0.3;
 
-    private List<Map<String,Float>> testDataSet;
+    private List<Map<String,Double>> testDataSet;
     private double[][] x;
     private double[] y;
 
@@ -50,7 +54,7 @@ public class DataSetGenerator {
     }
 
     public double[] getTestInput(int seqNum) {
-        Map<String, Float> map = this.testDataSet.get(seqNum);
+        Map<String, Double> map = this.testDataSet.get(seqNum);
         int len = DataSetGenerator.paramFields.length;
         double[] inputs = new double[len];
         for (int i = 0; i < len; i ++ ) {
@@ -63,7 +67,7 @@ public class DataSetGenerator {
     }
 
     public double getTestActualResult(int seqNum) {
-        Map<String, Float> map = this.testDataSet.get(seqNum);
+        Map<String, Double> map = this.testDataSet.get(seqNum);
         double value = map.get(resultFieldName).doubleValue();
         return value;
     }

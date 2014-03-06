@@ -26,20 +26,20 @@ public class DBReader {
 
     private List<Integer> testDataIdList;
 
-    private Map<String, Map<String, Float>> numericValues;
+    private Map<String, Map<String, AverageCountPair>> numericValues;
 
+    private String[] fieldNames = {idStr, "chinese_name", "director", "starring", "rate", "release_date", "type", "region", "votes", "language", "company", numericField};
 
     private String tableName = "mtime_revenue_3";
     private String condition = numericField + " IS NOT NULL and " + numericField + " > 0"
             + " and director <> '' and length(director) != character_length(director) "
             + " and starring <> '' and length(starring) != character_length(starring) ";
-    private String[] fieldNames = {idStr, "chinese_name", "director", "starring", "rate", "release_date", "type", "region", "votes", numericField};
 
 
     private double[][] x;
     private double[] y;
 
-    private List<Map<String,Float>> testDataSet;
+    private List<Map<String,Double>> testDataSet;
 
     public DBReader() {
         try {
@@ -110,35 +110,61 @@ public class DBReader {
         return;
     }
 
-    private Map<String, Float> getOneDimension(String query, String nameFieldName, String valueFieldName) throws SQLException {
+    private Map<String, AverageCountPair> getOneDimension(String query, String nameFieldName, String valueFieldName, String countFieldName)
+            throws SQLException {
+
         rs = stmt.executeQuery(query);
-        Map<String, Float> map = new HashMap<String, Float>();
+        Map<String, AverageCountPair> map = new HashMap<String, AverageCountPair>();
+        float sumValue = 0;
+        int sumCount = 0;
         while (rs.next()) {
-            map.put(rs.getString(nameFieldName), rs.getFloat(valueFieldName));
+            String name =  rs.getString(nameFieldName);
+            Float avgValue = rs.getFloat(valueFieldName);
+            Integer count = rs.getInt(countFieldName);
+
+            if (map.get(name) != null) {
+                System.err.println("The sub-dimension(" + nameFieldName + ") has existed.");
+            } else {
+                AverageCountPair pair = new AverageCountPair(avgValue, count);
+
+                map.put(name, pair);
+
+                sumValue += (avgValue * count);
+                sumCount += count;
+            }
         }
 
-        float avg = getAverageOfOneDimension(map);
-        map.put(anyOne, avg);
+        float avg = sumValue/ sumCount;
+        map.put(anyOne, new AverageCountPair(avg, sumCount));
         return map;
     }
 
+    private void mergeMaps(String fieldName, Map<String, AverageCountPair> resultMap, Map<String, AverageCountPair> inputMap) {
+        Set<Map.Entry<String, AverageCountPair>> entries = inputMap.entrySet();
 
-    private float getAverageOfOneDimension(Map<String, Float> map) {
-        if ((map == null) || (map.size() == 0)){
-            return 0;
+        for ( Map.Entry<String, AverageCountPair> entry : entries ) {
+            String inputMapKey = entry.getKey();
+            AverageCountPair inputMapValue = inputMap.get(inputMapKey);
+            if (resultMap.get(inputMapKey) != null) {
+                AverageCountPair oldValue = resultMap.get(inputMapKey);
+                if (!inputMapValue.equals(oldValue)) {
+                    //System.out.println("*** For Field(" + fieldName + ") The key (" + inputMapKey + "): value (" + inputMapValue.getAverage() + ") has existed in result map, value (" + oldValue.getAverage() + ").");
+                    int totalCount = inputMapValue.getCount() + oldValue.getCount();
+                    float newAverage = ((inputMapValue.getAverage() * inputMapValue.getCount()) + (oldValue.getAverage() * oldValue.getCount())) / (totalCount);
+                    resultMap.put(inputMapKey, new AverageCountPair(newAverage, totalCount));
+                } else {
+                    //System.out.println("--- For Field(" + fieldName + ") The key (" + inputMapKey + "): value (" + inputMapValue + ") has existed in result map, value (" + oldValue + ").");
+                }
+            } else {
+
+                resultMap.put(inputMapKey, inputMapValue);
+            }
         }
-
-        float average = 0;
-        for (float value : map.values())
-            average += value;
-        average /= map.size();
-
-        return average;
     }
-
     private void getNumericValueFromDB() throws SQLException {
-        numericValues = new HashMap<String, Map<String, Float>>();
+        numericValues = new HashMap<String, Map<String, AverageCountPair>>();
 
+        String countFieldName = "cnt";
         String valueFieldName = "average";
         String idString = "";
 
@@ -155,28 +181,92 @@ public class DBReader {
             String fieldName = DataSetGenerator.paramFields[i];
             String newFieldName = fieldName + "_new";
 
-            String newFieldDef = "";
-
             DBFieldType fieldType =  DataSetGenerator.paramFieldTypes[i];
-            if (fieldType == DBFieldType.String) {
-                newFieldDef = "substring_index(" + fieldName + ", ' ', 1) as " + newFieldName;
-            } else if (fieldType == DBFieldType.Numeric) {
-                newFieldDef = fieldName + " as " + newFieldName;
-            } else if (fieldType == DBFieldType.Date) {
-                newFieldDef = "substring_index(" + fieldName + ", '-', 1) as " + newFieldName;
-            }
 
-            String query = "select avg(" + numericField + ") as " +  valueFieldName + ", " + newFieldDef + " from "
-                    + tableName +  " where " + condition + " and " + commonCondition + " group by " + newFieldName;
+            Map<String, AverageCountPair> map = new HashMap<String, AverageCountPair>();
 
             if (fieldType == DBFieldType.String) {
+                int subFieldNum = DataSetGenerator.paramFieldItemNumber[i];
+                Map<String,AverageCountPair> subMap; //= new HashMap<String, Float>();
+                for (int n = 0; n < subFieldNum; n ++) {
+                    String newFieldDef = "substring_index(substring_index(" + fieldName + ", ' ', " + (n + 1) +"), ' ', -1) as " + newFieldName;
+                    String query = "select avg(" + numericField + ") as " +  valueFieldName + ", "
+                            + " count(" + numericField + ") as " + countFieldName + ", "
+                            + newFieldDef + " from " + tableName
+                            +  " where " + "substring_index(substring_index(" + fieldName + ", ' ', " + (n + 1) +"), ' ', -1) <> substring_index(substring_index(" + fieldName + ", ' ', " + n +"), ' ', -1) and "
+                            + condition + " and " + commonCondition + " group by " + newFieldName;
+
                     query += " having " + newFieldName+ "<>''";
-                    //query += " and length(" + newFieldName + ") != character_length(" + newFieldName + ")";
+                    subMap = getOneDimension(query, newFieldName, valueFieldName, countFieldName);
+                    mergeMaps(fieldName, map, subMap);
+                }
+
+            } else if (fieldType == DBFieldType.Numeric) {
+                String query = "select avg(" + numericField + ") as " +  valueFieldName + ", "
+                        + " count(" + numericField + ") as " + countFieldName + ", "
+                        + fieldName + " as " + newFieldName + " from "
+                        + tableName +  " where " + condition + " and " + commonCondition + " group by " + newFieldName;
+
+                map = getOneDimension(query, newFieldName, valueFieldName,countFieldName);
+
+            } else if (fieldType == DBFieldType.Date) {
+                String query = "select avg(" + numericField + ") as " +  valueFieldName + ", "
+                        + " count(" + numericField + ") as " + countFieldName + ", "
+                        + "substring_index(" + fieldName + ", '-', 1) as " + newFieldName + " from "
+                        + tableName +  " where " + condition + " and " + commonCondition + " group by " + newFieldName;
+
+                map = getOneDimension(query, newFieldName, valueFieldName,countFieldName);
+
             }
 
-            Map<String, Float> map = getOneDimension(query, newFieldName, valueFieldName);
             numericValues.put(fieldName, map);
         }
+    }
+
+    private double[] getNumericValueForOneRecord(Map<String, Object> map) {
+        double[] result = new double[DataSetGenerator.paramFields.length];
+
+        for (int j = 0; j < DataSetGenerator.paramFields.length; j ++) {
+            String fieldName = DataSetGenerator.paramFields[j];
+
+            int itemNum = DataSetGenerator.paramFieldItemNumber[j];
+            String itemName = "" + map.get(fieldName);
+
+
+            String[] items;
+
+            if (itemNum > 1) {
+                String[] tmps = itemName.split(" ");
+                if (tmps.length < itemNum) {
+                    itemNum = tmps.length;
+                }
+
+                items = tmps;
+            } else {
+                items = new String[1];
+                items[0] = itemName;
+            }
+
+            float itemValue = 0;
+            for (int n = 0; n < itemNum; n ++) {
+                String subItemName = items[n];
+                if ((subItemName == null) || (subItemName.equals(""))) {
+                    subItemName = anyOne;
+                }
+
+                AverageCountPair subItemValue = numericValues.get(fieldName).get(subItemName);
+
+                if (subItemValue != null) {
+                    itemValue += subItemValue.getAverage();
+                } else {
+                    itemValue += numericValues.get(fieldName).get(anyOne).getAverage();
+                }
+            }
+
+            itemValue = itemValue/itemNum;
+            result[j] = itemValue;
+        }
+        return result;
     }
 
     private void getInputValues() throws SQLException {
@@ -187,16 +277,7 @@ public class DBReader {
 
         for (int i = 0; i < trainingSet.size(); i ++) {
             Map<String, Object> map = trainingSet.get(i);
-            for (int j = 0; j < DataSetGenerator.paramFields.length; j ++) {
-                String fieldName = DataSetGenerator.paramFields[j];
-                String itemName = "" + map.get(fieldName);
-                Float itemValue = numericValues.get(fieldName).get(itemName);
-                if (itemValue != null) {
-                    x[i][j] = itemValue.floatValue();
-                } else {
-                    x[i][j] = numericValues.get(fieldName).get(anyOne).floatValue();
-                }
-            }
+            x[i] = getNumericValueForOneRecord(map);
 
             double actualRevenue = ((Double) map.get(DataSetGenerator.resultFieldName)).doubleValue();
             y[i] = actualRevenue;
@@ -204,13 +285,13 @@ public class DBReader {
     }
 
     private void convertTestDataSet() {
-        testDataSet = new ArrayList<Map<String, Float>> ();
+        testDataSet = new ArrayList<Map<String, Double>> ();
 
         for (int i = 0; i < testSet.size(); i ++) {
-            Map<String, Float> dataMap = new HashMap<String, Float>();
+            Map<String, Double> dataMap = new HashMap<String, Double>();
 
             Map<String, Object> map = testSet.get(i);
-            for (int j = 0; j < DataSetGenerator.paramFields.length; j ++) {
+            /*for (int j = 0; j < DataSetGenerator.paramFields.length; j ++) {
                 String fieldName = DataSetGenerator.paramFields[j];
                 String itemName = "" + map.get(fieldName);
 
@@ -223,9 +304,14 @@ public class DBReader {
                     numbericValue = numericValues.get(fieldName).get(anyOne).floatValue();
                 }
                 dataMap.put(fieldName, numbericValue);
+            }*/
+            double[] numericValues = getNumericValueForOneRecord(map);
+            for (int j = 0; j < DataSetGenerator.paramFields.length; j ++) {
+                //String fieldName = DataSetGenerator.paramFields[j];
+                dataMap.put(DataSetGenerator.paramFields[j], numericValues[j]);
             }
 
-            float revenue = ((Double) map.get(DataSetGenerator.resultFieldName)).floatValue();
+            double revenue = ((Double) map.get(DataSetGenerator.resultFieldName)).doubleValue();
             dataMap.put(DataSetGenerator.resultFieldName, revenue);
             testDataSet.add(dataMap);
         }
@@ -241,21 +327,72 @@ public class DBReader {
         return x;
     }
 
-    public List<Map<String,Float>> getTestDataSet() {
+    public List<Map<String,Double>> getTestDataSet() {
         return testDataSet;
     }
 
     public String getTestDataString(int seqNum) {
         StringBuffer sBuff = new StringBuffer();
         Map<String, Object> map = testSet.get(seqNum);
-        Set<String> keySet = map.keySet();
-        Iterator<String> iterator = keySet.iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
+
+        String name = "" + map.get("chinese_name");
+
+        for (int i = 0; i < DataSetGenerator.paramFields.length; i ++) {
+            String key = DataSetGenerator.paramFields[i];
             String value = "" + map.get(key);
+            String[] tmps = value.split(" ");
+            if (tmps.length > DataSetGenerator.paramFieldItemNumber[i] ) {
+                value = "";
+                for (int j = 0; j < DataSetGenerator.paramFieldItemNumber[i]; j ++) {
+                    //try {
+                    value += tmps[j] + " ";
+                    //} catch (ArrayIndexOutOfBoundsException e) {
+                    //    e.printStackTrace();
+                    //}
+                }
+            }
             sBuff.append(key + ": " + value + ", ");
         }
 
-        return sBuff.toString();
+        return "[" + name + "] -- " + sBuff.toString();
+    }
+
+    class AverageCountPair {
+        private float average;
+        private int count;
+
+        public AverageCountPair(float avg, int cnt) {
+            average = avg;
+            count = cnt;
+        }
+
+        public float getAverage() {
+            return average;
+        }
+
+        public void setAverage(float average) {
+            this.average = average;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public void setCount(int count) {
+            this.count = count;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            AverageCountPair that = (AverageCountPair) o;
+
+            if (Float.compare(that.average, average) != 0) return false;
+            if (count != that.count) return false;
+
+            return true;
+        }
     }
 }

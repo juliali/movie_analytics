@@ -12,6 +12,8 @@ import java.util.*;
  * Created by Julia on 3/4/14.
  */
 public class DataSetGenerator {
+    private static InfoStore infoStore = InfoStore.getInstance();
+
     private List<Map<String, Object>> testSet;
     private List<Map<String, Double>> testDataSet;
     private double[][] x;
@@ -127,9 +129,10 @@ public class DataSetGenerator {
             String key = DBReader.paramFields[i];
             String value = "" + map.get(key);
             String[] tmps = value.split(" ");
-            if (tmps.length > DBReader.paramFieldItemNumber[i]) {
+            int subNum = infoStore.getFeatureSubItemNum(key);
+            if (tmps.length > subNum){ //DBReader.paramFieldItemNumber[i]) {
                 value = "";
-                for (int j = 0; j < DBReader.paramFieldItemNumber[i]; j++) {
+                for (int j = 0; j < subNum /*DBReader.paramFieldItemNumber[i]*/; j++) {
                     value += tmps[j] + " ";
                 }
             }

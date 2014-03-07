@@ -13,14 +13,11 @@ import java.util.*;
  */
 public class DBReader {
 
-    public static final DBFieldType[] paramFieldTypes = {DBFieldType.Numeric, DBFieldType.String, DBFieldType.String};
-    public static final String[] paramFields = {"search_num", "director", "starring"};
-    public static final int[] paramFieldItemNumber = {1, 1, 3};
+    private static InfoStore infoStore = InfoStore.getInstance();
+    public static final String[] paramFields = infoStore.getFeaturesInModel();
+    public static final String resultFieldName = infoStore.getResultFieldName();
 
-
-    public static final String resultFieldName = "revenue";
-
-    public static final double testRecordPercentage = 0.3;
+    public static final double testRecordPercentage = infoStore.getTestRecordPercentage();
 
     private static final String idStr = "Id";
     private Connection conn = null;
@@ -37,15 +34,15 @@ public class DBReader {
 
     private Map<String, Map<String, AverageCountPair>> numericValues;
 
-    private String[] fieldNames = {idStr, "chinese_name", "director", "starring", "rate", "release_date", "type", "region", "votes", "runtime", "language", "company", "search_num", numericField};
+    private String[] fieldNames = infoStore.getAllFeatureNames();
 
-    private String tableName = "mtime_revenue_search_3";
+    private String tableName = infoStore.getTableName();
     private String condition = numericField + " IS NOT NULL and " + numericField + " > 0"
             + " and director <> '' and length(director) != character_length(director) "
             + " and starring <> '' and length(starring) != character_length(starring) ";
 
-    private String sourceTableName = "movie";
-    private String hostIP = "10.34.32.35";
+    private String sourceTableName = infoStore.getSourceTableName();
+    private String hostIP = infoStore.getDbHost();
 
     private double[][] x;
     private double[] y;
@@ -254,7 +251,7 @@ public class DBReader {
             String fieldName = paramFields[i];
             String newFieldName = fieldName + "_new";
 
-            DBFieldType fieldType = paramFieldTypes[i];
+            DBFieldType fieldType = infoStore.getFeatureType(fieldName);//paramFieldTypes[i];
 
             Map<String, AverageCountPair> map = new HashMap<String, AverageCountPair>();
 
@@ -264,7 +261,7 @@ public class DBReader {
             } else {
 
                 if (fieldType == DBFieldType.String) {
-                    int subFieldNum = paramFieldItemNumber[i];
+                    int subFieldNum = infoStore.getFeatureSubItemNum(fieldName);//paramFieldItemNumber[i];
                     Map<String, AverageCountPair> subMap; //= new HashMap<String, Float>();
                     for (int n = 0; n < subFieldNum; n++) {
                         String newFieldDef = "substring_index(substring_index(" + fieldName + ", ' ', " + (n + 1) + "), ' ', -1) as " + newFieldName;
@@ -300,14 +297,14 @@ public class DBReader {
         for (int j = 0; j < paramFields.length; j++) {
             String fieldName = paramFields[j];
 
-            DBFieldType fieldType = paramFieldTypes[j];
+            DBFieldType fieldType = infoStore.getFeatureType(fieldName);//paramFieldTypes[j];
 
             if (fieldType == DBFieldType.Numeric) {
                 Float itemValue = (Float) map.get(fieldName);
                 result[j] = itemValue.doubleValue();
             } else {
 
-                int itemNum = paramFieldItemNumber[j];
+                int itemNum = infoStore.getFeatureSubItemNum(fieldName);//paramFieldItemNumber[j];
                 String itemName = "" + map.get(fieldName);
                 String[] items;
 

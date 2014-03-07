@@ -12,7 +12,8 @@ import java.text.NumberFormat;
  */
 public class MovieAnalyzer {
 
-    private static final double errorTolerance = 10;
+    private static InfoStore infoStore = InfoStore.getInstance();
+    private static final double errorTolerance = infoStore.getErrorToleranceRate();
     DataSetGenerator dsGen;
     double[] parameters;
 

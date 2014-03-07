@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 - 2014 Cetas Software, Inc. All rights reserved. This is Cetas
+ * Copyright 2011 - 2014 Cetas Software, Inc. All rights reserved. This is GTL
  * proprietary and confidential material and its use is subject to license terms.
  */
 
@@ -19,21 +19,7 @@ public class DBReader {
 
     public static final double testRecordPercentage = infoStore.getTestRecordPercentage();
 
-    private static final String idStr = "Id";
-    private Connection conn = null;
-    private Statement stmt = null;
-    private ResultSet rs = null;
-
     private String numericField = resultFieldName;
-    private String anyOne = "ANYONE_HASNORECORD";
-
-    private List<Map<String, Object>> trainingSet;
-    private List<Map<String, Object>> testSet;
-
-    private List<Integer> testDataIdList;
-
-    private Map<String, Map<String, AverageCountPair>> numericValues;
-
     private String[] fieldNames = infoStore.getAllFeatureNames();
 
     private String tableName = infoStore.getTableName();
@@ -43,6 +29,23 @@ public class DBReader {
 
     private String sourceTableName = infoStore.getSourceTableName();
     private String hostIP = infoStore.getDbHost();
+
+    private static final String idStr = "Id";
+    private String anyOne = "ANYONE_HASNORECORD";
+
+    private Connection conn = null;
+    private Statement stmt = null;
+    private ResultSet rs = null;
+
+
+
+    private List<Map<String, Object>> trainingSet;
+    private List<Map<String, Object>> testSet;
+
+    private List<Integer> testDataIdList;
+
+    private Map<String, Map<String, AverageCountPair>> numericValues;
+
 
     private double[][] x;
     private double[] y;

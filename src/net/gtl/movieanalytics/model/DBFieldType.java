@@ -3,7 +3,7 @@
  * proprietary and confidential material and its use is subject to license terms.
  */
 
-package net.gtl.movieanalytics.linearregression;
+package net.gtl.movieanalytics.model;
 
 /**
  * Created by Julia on 3/5/14.

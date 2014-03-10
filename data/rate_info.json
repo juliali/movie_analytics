@@ -1,10 +1,10 @@
 {
-    "testRecordPercentage": 0.3,
-    "errorToleranceRate": 1.0,
+    "testRecordPercentage": 0.01,
+    "errorToleranceRate": [0.1],
     "dbHost": "10.34.32.35",
-    "tableName": "mtime_revenue_search_3",
+    "tableName": "movie",
     "sourceTableName": "movie",
-    "resultFieldName": "revenue",
+    "resultFieldName": "rate",
     "features": [
         {
             "name": "Id",
@@ -24,7 +24,7 @@
         {
             "name": "starring",
             "type": "String",
-            "subNum": 3,
+            "subNum": 2,
         },
         {
             "name": "rate",
@@ -72,10 +72,10 @@
             "subNum": 1,
         },
         {
-            "name": "revenue",
-            "type": "Numeric",
-            "subNum": 1,
+             "name": "revenue",
+              "type": "Numeric",
+              "subNum": 1,
         }
     ],
-    "featuresInModel": ["director", "starring", "search_num", "rate"]
+    "featuresInModel": ["director", "starring", "type", "region", "votes", "company"]
 }

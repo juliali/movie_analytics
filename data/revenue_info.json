@@ -1,0 +1,81 @@
+{
+    "testRecordPercentage": 0.3,
+    "errorToleranceRate": [1.0,3.0,10.0],
+    "dbHost": "10.34.32.35",
+    "tableName": "mtime_revenue_search_3",
+    "sourceTableName": "movie",
+    "resultFieldName": "revenue",
+    "features": [
+        {
+            "name": "Id",
+            "type": "Numeric",
+            "subNum": 1,
+        },
+        {
+            "name": "chinese_name",
+            "type": "String",
+            "subNum": 1,
+        },
+        {
+            "name": "director",
+            "type": "String",
+            "subNum": 1,
+        },
+        {
+            "name": "starring",
+            "type": "String",
+            "subNum": 2,
+        },
+        {
+            "name": "rate",
+            "type": "Numeric",
+            "subNum": 1,
+        },
+        {
+            "name": "release_date",
+            "type": "Date",
+            "subNum": 1,
+        },
+        {
+            "name": "type",
+            "type": "String",
+            "subNum": 1,
+        },
+        {
+            "name": "region",
+            "type": "String",
+            "subNum": 1,
+        },
+        {
+            "name": "votes",
+            "type": "Numeric",
+            "subNum": 1,
+        },
+        {
+            "name": "runtime",
+            "type": "Numeric",
+            "subNum": 1,
+        },
+        {
+            "name": "language",
+            "type": "String",
+            "subNum": 1,
+        },
+        {
+            "name": "company",
+            "type": "String",
+            "subNum": 1,
+        },
+        {
+            "name": "search_num",
+            "type": "Numeric",
+            "subNum": 1,
+        },
+        {
+             "name": "revenue",
+              "type": "Numeric",
+              "subNum": 1,
+        }
+    ],
+    "featuresInModel": ["director", "starring", "type", "region", "votes", "company"]
+}

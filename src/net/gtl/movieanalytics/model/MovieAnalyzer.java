@@ -20,15 +20,10 @@ public class MovieAnalyzer {
     private static TestDataStore tdStore = TestDataStore.getInstance();
     private static FeatureStore featureStore = FeatureStore.getInstance();
 
-    private static final double errorTolerance = infoStore.getErrorToleranceRate();
-    //DataSetGenerator dsGen;
-    double[] parameters;
+    private static final double[] errorTolerance = infoStore.getErrorToleranceRate();
+    private double[] parameters;
 
     public MovieAnalyzer() {
-        //dsGen = new DataSetGenerator();
-        //double[][] x = dsGen.getX();
-        //double[] y = dsGen.getY();
-        //LinearRegression lr = new LinearRegression(x, y);
         DataSetGenerator dsGen = new DataSetGenerator();
         dsGen.doTrainning();
         parameters = featureStore.getParameters();
@@ -84,7 +79,10 @@ public class MovieAnalyzer {
         dsGen.getTestDataSet();
 
         int size = tdStore.getTestDataSize();
-        int bingoNum = 0;
+        int[] bingoNum = new int[errorTolerance.length];
+        for (int i = 0; i < bingoNum.length; i ++) {
+            bingoNum[i] = 0;
+        }
 
         for (int i = 0; i < size; i ++) {
             String info = tdStore.getTestDataString(i);
@@ -98,19 +96,38 @@ public class MovieAnalyzer {
                 errorRate = 0 - errorRate;
             }
 
-            String result = "Failed";
-            if (errorRate <= errorTolerance) {
-                bingoNum ++;
-                result = "Bingo!";
+            System.out.println("[test case " + (i + 1) + "]: " + info);
+            System.out.print("    predictResult: " + predictResult + "; actualResult: " + actualResult + "; errorRate: " + nf.format(errorRate) + " -- ") ;
+                    String result[] = new String[errorTolerance.length];
+
+            for (int j = 0; j < result.length; j ++) {
+                if (errorRate <= errorTolerance[j]) {
+                    bingoNum[j] ++;
+                    result[j] = "Bingo!";
+                } else {
+                    result[j] = "Failed";
+                }
+                System.out.print(" result for tolerance " + errorTolerance[j] + ": " + result[j]);
+                if (j < result.length -1) {
+                    System.out.print("; ");
+                }
             }
 
-            System.out.println("[test case " + (i + 1) + "]: " + info);
-
-            System.out.println("    predictResult: " + predictResult + "; actualResult: " + actualResult + "; errorRate: " + nf.format(errorRate) + " -- " + result);
+            System.out.println("");
         }
 
-        double accurency = (double) bingoNum/ (double) size;
-        System.out.println("\nTotal Test Case Number: " + size + "; Bingo Number: " + bingoNum + "; and Accurency: " + nf.format(accurency));
+        double[] accurency = new double[errorTolerance.length];
+        System.out.print("\nTotal Test Case Number: " + size);
+        for (int i = 0; i < accurency.length; i ++) {
+            accurency[i] = (double) bingoNum[i]/ (double) size;
+            System.out.print("; for [errorTolerance " + errorTolerance[i]+ "]: Bingo Number: " + bingoNum[i] + ", Accurency: " + nf.format(accurency[i]));
+            if (i < accurency.length - 1) {
+                System.out.print(", ");
+            }
+        }
+
+        System.out.println("\n");
+
     }
 
     public static void main(String[] args) {

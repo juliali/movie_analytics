@@ -22,7 +22,7 @@ public class DBReader {
     public static final String[] paramFields = infoStore.getFeaturesInModel();
     public static final String resultFieldName = infoStore.getResultFieldName();
 
-    public static final double testRecordPercentage = infoStore.getTestRecordPercentage();
+
 
     private String numericField = resultFieldName;
     private String[] fieldNames = infoStore.getAllFeatureNames();
@@ -44,20 +44,10 @@ public class DBReader {
     private Statement stmt = null;
     private ResultSet rs = null;
 
-
-
-    //private List<Map<String, Object>> trainingSet;
-    //private List<Map<String, Object>> testSet;
-
     private List<Integer> testDataIdList;
-
-    //private Map<String, Map<String, AverageCountPair>> numericValues;
-
 
     private double[][] x;
     private double[] y;
-
-    //private List<Map<String, Double>> testDataSet;
 
     public DBReader() {
         initDBConnection();
@@ -139,8 +129,6 @@ public class DBReader {
             for (int j = 0; j < paramFields.length; j++) {
                 dataMap.put(paramFields[j], numericValues[j]);
             }
-
-            //double revenue = ((Double) map.get(resultFieldName)).doubleValue();
             return dataMap;
 
         } else {
@@ -151,7 +139,7 @@ public class DBReader {
 
     private List<Map<String, Object>> getTrainingDataSets() throws SQLException {
         List<Map<String, Object>> trainingSet = new ArrayList<Map<String, Object>>();
-        //testSet = new ArrayList<Map<String, Object>>();
+
         String countQuery = "select count(*) as tn from " + tableName + " where " + condition;
         rs = stmt.executeQuery(countQuery);
         rs.next();
@@ -169,7 +157,13 @@ public class DBReader {
 
             HashMap<String, Object> map = new HashMap<String, Object>();
             for (int i = 0; i < fieldNames.length; i++) {
-                map.put(fieldNames[i], rs.getObject(fieldNames[i]));
+
+                try {
+                    Object value = rs.getObject(fieldNames[i]);
+                    map.put(fieldNames[i], value);
+                } catch (SQLException e) {
+                    System.err.println("The field of " + fieldNames[i] + " doesn't exist in training dataset.");
+                }
             }
 
             if (testDataRowNumbers.contains(rowNum)) {
@@ -189,7 +183,7 @@ public class DBReader {
         String countQuery = "select count(*) as tn from " + tableName + " where " + condition;
         rs = stmt.executeQuery(countQuery);
         rs.next();
-        Set<Integer> testDataRowNumbers = featureStore.getTestRowNumber(); //DataSetGenerator.getTestDataRowNumbers(totalRecordNum);
+        Set<Integer> testDataRowNumbers = featureStore.getTestRowNumber();
 
         String query = "select * from " + tableName + " where " + condition;
         rs = stmt.executeQuery(query);
@@ -201,7 +195,14 @@ public class DBReader {
 
             HashMap<String, Object> map = new HashMap<String, Object>();
             for (int i = 0; i < fieldNames.length; i++) {
-                map.put(fieldNames[i], rs.getObject(fieldNames[i]));
+                //map.put(fieldNames[i], rs.getObject(fieldNames[i]));
+
+                try {
+                    Object value = rs.getObject(fieldNames[i]);
+                    map.put(fieldNames[i], value);
+                } catch (SQLException e) {
+                    System.err.println("The field of " + fieldNames[i] + " doesn't exist in test dataset.");
+                }
             }
 
             if (testDataRowNumbers.contains(rowNum)) {
@@ -291,7 +292,7 @@ public class DBReader {
             String fieldName = paramFields[i];
             String newFieldName = fieldName + "_new";
 
-            DBFieldType fieldType = infoStore.getFeatureType(fieldName);//paramFieldTypes[i];
+            DBFieldType fieldType = infoStore.getFeatureType(fieldName);
 
             Map<String, AverageCountPair> map = new HashMap<String, AverageCountPair>();
 
@@ -301,8 +302,8 @@ public class DBReader {
             } else {
 
                 if (fieldType == DBFieldType.String) {
-                    int subFieldNum = infoStore.getFeatureSubItemNum(fieldName);//paramFieldItemNumber[i];
-                    Map<String, AverageCountPair> subMap; //= new HashMap<String, Float>();
+                    int subFieldNum = infoStore.getFeatureSubItemNum(fieldName);
+                    Map<String, AverageCountPair> subMap;
                     for (int n = 0; n < subFieldNum; n++) {
                         String newFieldDef = "substring_index(substring_index(" + fieldName + ", ' ', " + (n + 1) + "), ' ', -1) as " + newFieldName;
                         String query = "select avg(" + numericField + ") as " + valueFieldName + ", "
@@ -337,15 +338,17 @@ public class DBReader {
 
         for (int j = 0; j < paramFields.length; j++) {
             String fieldName = paramFields[j];
+            if (map.get(fieldName) == null) {
+                continue;
+            }
 
-            DBFieldType fieldType = infoStore.getFeatureType(fieldName);//paramFieldTypes[j];
+            DBFieldType fieldType = infoStore.getFeatureType(fieldName);
 
             if (fieldType == DBFieldType.Numeric) {
-                Float itemValue = (Float) map.get(fieldName);
-                result[j] = itemValue.doubleValue();
+                result[j] = getNumericDataFromDB(map, fieldName);
             } else {
 
-                int itemNum = infoStore.getFeatureSubItemNum(fieldName);//paramFieldItemNumber[j];
+                int itemNum = infoStore.getFeatureSubItemNum(fieldName);
                 String itemName = "" + map.get(fieldName);
                 String[] items;
 
@@ -368,7 +371,6 @@ public class DBReader {
                         subItemName = anyOne;
                     }
 
-                    //System.out.println("fieldName: " + fieldName + "; subItemName: " + subItemName);
                     Map<String, Map<String, AverageCountPair>> numericValues = featureStore.getNumericValues();
                     AverageCountPair subItemValue = numericValues.get(fieldName).get(subItemName);
 
@@ -396,11 +398,27 @@ public class DBReader {
             Map<String, Object> map = trainingSet.get(i);
             x[i] = getNumericValueForOneRecord(map);
 
-            double actualRevenue = ((Double) map.get(resultFieldName)).doubleValue();
-            y[i] = actualRevenue;
+            double actualResult = getNumericDataFromDB(map, resultFieldName);
+            y[i] = actualResult;
         }
     }
 
+    private double getNumericDataFromDB(Map<String, Object> map, String fieldName) {
+        Object obj = map.get(fieldName);
+        String className = obj.getClass().toString();
+        double actualResult = 0;
+        if (className.indexOf("Double") != -1) {
+            Double itemValue = (Double) obj;
+            actualResult = itemValue.doubleValue();
+        } else if (className.indexOf("Integer") != -1) {
+            Integer itemValue = (Integer) obj;
+            actualResult = itemValue.doubleValue();
+        } else {
+            Float itemValue = (Float) obj;
+            actualResult = itemValue.doubleValue();
+        }
+        return actualResult;
+    }
     public List<Map<String, Double>> convertTestDataSet(List<Map<String, Object>> testSet) {
 
         List<Map<String, Double>> testDataSet = new ArrayList<Map<String, Double>>();
@@ -415,7 +433,7 @@ public class DBReader {
                 dataMap.put(paramFields[j], numericValues[j]);
             }
 
-            double revenue = ((Double) map.get(resultFieldName)).doubleValue();
+            double revenue = getNumericDataFromDB(map, resultFieldName);
             dataMap.put(resultFieldName, revenue);
             testDataSet.add(dataMap);
         }
@@ -430,12 +448,4 @@ public class DBReader {
     public double[][] getX() {
         return x;
     }
-
-    /*public List<Map<String, Object>> getTestSet() {
-        return testSet;
-    }
-
-    public List<Map<String, Double>> getTestDataSet() {
-        return testDataSet;
-    }*/
 }

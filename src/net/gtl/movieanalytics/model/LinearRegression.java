@@ -12,15 +12,11 @@ import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
  * Created by Julia on 3/4/14.
  */
 public class LinearRegression {
-
-    //private double[] parameters;
     private static FeatureStore featureStore = FeatureStore.getInstance();
 
     public LinearRegression(double[][] x, double[] y) {
         double[] parameters = estimateParameter(x,y);
         featureStore.setParameters(parameters);
-
-        //infoStore.setParameters(parameters);
     }
 
     private void printTestData(double[][] x, double[] y) {
@@ -37,16 +33,10 @@ public class LinearRegression {
         }
     }
     private double[] estimateParameter(double[][] x, double[] y) {
-        /// printTestData(x, y);
+        //printTestData(x, y);
 
         OLSMultipleLinearRegression ols = new OLSMultipleLinearRegression();
         ols.newSampleData(y, x);
         return ols.estimateRegressionParameters();
     }
-
-    //public double[] getParameters()  {
-    //    return parameters;
-    //}
-
-
 }

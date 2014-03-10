@@ -31,9 +31,7 @@ public class InfoStore {
     private String[] featuresInModel;
 
     double testRecordPercentage;
-    double errorToleranceRate;
-
-    //private double[] parameters;
+    double[] errorToleranceRate;
 
     private InfoStore() {
         featureMap = new HashMap<String, FeatureDimension>();
@@ -121,11 +119,11 @@ public class InfoStore {
         this.testRecordPercentage = testRecordPercentage;
     }
 
-    public double getErrorToleranceRate() {
+    public double[] getErrorToleranceRate() {
         return errorToleranceRate;
     }
 
-    public void setErrorToleranceRate(double errorToleranceRate) {
+    public void setErrorToleranceRate(double[] errorToleranceRate) {
         this.errorToleranceRate = errorToleranceRate;
     }
 
@@ -157,7 +155,16 @@ public class InfoStore {
             JSONObject root = (JSONObject) parser.parse(new FileReader(path));
             double testRecordPercentage = (Double) root.get("testRecordPercentage");
             this.setTestRecordPercentage(testRecordPercentage);
-            double errorToleranceRate = (Double) root.get("errorToleranceRate");
+
+            JSONArray tolerances = (JSONArray) root.get("errorToleranceRate");
+
+            double errorToleranceRate[] = new double[tolerances.size()];//(Double) root.get("errorToleranceRate");
+            Iterator<Double> iter = tolerances.iterator();
+            int i = 0;
+            while (iter.hasNext()) {
+                errorToleranceRate[i] = iter.next();
+                i ++;
+            }
             this.setErrorToleranceRate(errorToleranceRate);
             String tableName = (String) root.get("tableName");
             this.setTableName(tableName);
@@ -183,10 +190,10 @@ public class InfoStore {
 
             JSONArray fm = (JSONArray) root.get("featuresInModel");
             String[] featuresInModel = new String[fm.size()];
-            Iterator<String> iter = fm.iterator();
-            int i = 0;
-            while (iter.hasNext()) {
-                featuresInModel[i] = iter.next();
+            Iterator<String> iterS = fm.iterator();
+            i = 0;
+            while (iterS.hasNext()) {
+                featuresInModel[i] = iterS.next();
                 i ++;
             }
             this.setFeaturesInModel(featuresInModel);

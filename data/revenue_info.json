@@ -77,5 +77,42 @@
               "subNum": 1,
         }
     ],
-    "featuresInModel": ["director", "starring", "type", "region", "votes", "company"]
+    "featuresInModel": [
+        {
+            "name": "director",
+            "enabled": false
+        },
+        {
+            "name": "starring",
+            "enabled": false
+        },
+        {
+            "name": "type",
+            "enabled": false
+        },
+        {
+            "name": "region",
+            "enabled": false
+        },
+        {
+            "name": "votes",
+            "enabled": true,
+            "function": {
+                "name": "multiple",
+                "arguments": [0.001]
+            }
+
+        },
+        {
+            "name": "company",
+            "enabled": false
+        },
+        {
+            "name": "search_num",
+            "enabled": true,
+            "function": {
+                "name": "loge"
+            }
+        }
+    ]
 }

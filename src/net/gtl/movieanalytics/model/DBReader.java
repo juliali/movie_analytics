@@ -5,10 +5,7 @@
 
 package net.gtl.movieanalytics.model;
 
-import net.gtl.movieanalytics.data.AverageCountPair;
-import net.gtl.movieanalytics.data.DBFieldType;
-import net.gtl.movieanalytics.data.FeatureStore;
-import net.gtl.movieanalytics.data.InfoStore;
+import net.gtl.movieanalytics.data.*;
 
 import java.sql.*;
 import java.util.*;
@@ -19,7 +16,7 @@ import java.util.*;
 public class DBReader {
 
     private static InfoStore infoStore = InfoStore.getInstance();
-    public static final String[] paramFields = infoStore.getFeaturesInModel();
+    public static final List<Feature> paramFields = infoStore.getFeaturesInModel();
     public static final String resultFieldName = infoStore.getResultFieldName();
 
 
@@ -110,24 +107,25 @@ public class DBReader {
         HashMap<String, Object> map = new HashMap<String, Object>();
 
         if (rs.next()) {
-            for (int i = 0; i < paramFields.length; i++) {
+            for (int i = 0; i < paramFields.size(); i++) {
+                String fieldName = paramFields.get(i).getName();
                 Object value = null;
                 try {
-                    value = rs.getObject(paramFields[i]);
+                    value = rs.getObject(fieldName);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
 
                 if (value != null) {
-                    map.put(paramFields[i], value);
+                    map.put(fieldName, value);
                 }
             }
 
             Map<String, Double> dataMap = new HashMap<String, Double>();
 
             double[] numericValues = getNumericValueForOneRecord(map);
-            for (int j = 0; j < paramFields.length; j++) {
-                dataMap.put(paramFields[j], numericValues[j]);
+            for (int j = 0; j < paramFields.size(); j++) {
+                dataMap.put(paramFields.get(j).getName(), numericValues[j]);
             }
             return dataMap;
 
@@ -287,9 +285,9 @@ public class DBReader {
             commonCondition = " and " + idStr + " NOT in (" + idString + ")";
         }
 
-        for (int i = 0; i < paramFields.length; i++) {
+        for (int i = 0; i < paramFields.size(); i++) {
 
-            String fieldName = paramFields[i];
+            String fieldName = paramFields.get(i).getName();
             String newFieldName = fieldName + "_new";
 
             DBFieldType fieldType = infoStore.getFeatureType(fieldName);
@@ -334,18 +332,18 @@ public class DBReader {
     }
 
     private double[] getNumericValueForOneRecord(Map<String, Object> map) {
-        double[] result = new double[paramFields.length];
+        double[] result = new double[paramFields.size()];
 
-        for (int j = 0; j < paramFields.length; j++) {
-            String fieldName = paramFields[j];
+        for (int j = 0; j < paramFields.size(); j++) {
+            String fieldName = paramFields.get(j).getName();
             if (map.get(fieldName) == null) {
                 continue;
             }
 
             DBFieldType fieldType = infoStore.getFeatureType(fieldName);
-
+            double itemValue = 0;
             if (fieldType == DBFieldType.Numeric) {
-                result[j] = getNumericDataFromDB(map, fieldName);
+                itemValue = getNumericDataFromDB(map, fieldName);
             } else {
 
                 int itemNum = infoStore.getFeatureSubItemNum(fieldName);
@@ -364,7 +362,7 @@ public class DBReader {
                     items[0] = itemName;
                 }
 
-                float itemValue = 0;
+                itemValue = 0;
                 for (int n = 0; n < itemNum; n++) {
                     String subItemName = items[n];
                     if ((subItemName == null) || (subItemName.equals(""))) {
@@ -382,7 +380,31 @@ public class DBReader {
                 }
 
                 itemValue = itemValue / itemNum;
+
+            }
+
+            FeatureFunction function = this.paramFields.get(j).getFunction();
+            if (function == null) {
                 result[j] = itemValue;
+            } else {
+                FeatureFunctionType type = function.getType();
+                //System.out.println("Function type is " + type.toString());
+                double[] arguments = function.getArguments();
+                if (type == FeatureFunctionType.LOGE) {
+                    if (itemValue == 0) {
+                        result[j] = 0;
+                    } else {
+                        result[j] = Math.log(itemValue);
+                    }
+                } else if (type == FeatureFunctionType.MULTIPLE) {
+                    result[j] = itemValue * arguments[0];
+                } else if (type == FeatureFunctionType.POWER) {
+                    result[j] = Math.pow(itemValue, arguments[0]);
+                }
+
+                //if ((result[j] == Double.POSITIVE_INFINITY) || (result[j] == Double.NEGATIVE_INFINITY)) {
+                //    System.out.println(type.toString() + " : " + itemValue);
+                //}
             }
         }
         return result;
@@ -391,7 +413,7 @@ public class DBReader {
     private void getInputValues(List<Map<String, Object>> trainingSet) throws SQLException {
         getNumericValueFromDB();
 
-        x = new double[trainingSet.size()][paramFields.length];
+        x = new double[trainingSet.size()][paramFields.size()];
         y = new double[trainingSet.size()];
 
         for (int i = 0; i < trainingSet.size(); i++) {
@@ -429,8 +451,8 @@ public class DBReader {
             Map<String, Object> map = testSet.get(i);
 
             double[] numericValues = getNumericValueForOneRecord(map);
-            for (int j = 0; j < paramFields.length; j++) {
-                dataMap.put(paramFields[j], numericValues[j]);
+            for (int j = 0; j < paramFields.size(); j++) {
+                dataMap.put(paramFields.get(j).getName(), numericValues[j]);
             }
 
             double revenue = getNumericDataFromDB(map, resultFieldName);

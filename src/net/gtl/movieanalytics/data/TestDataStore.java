@@ -69,8 +69,8 @@ public class TestDataStore {
 
         String name = "" + map.get("chinese_name");
 
-        for (int i = 0; i < DBReader.paramFields.length; i++) {
-            String key = DBReader.paramFields[i];
+        for (int i = 0; i < DBReader.paramFields.size(); i++) {
+            String key = DBReader.paramFields.get(i).getName();
             String value = "" + map.get(key);
             String[] tmps = value.split(" ");
             int subNum = infoStore.getFeatureSubItemNum(key);

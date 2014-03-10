@@ -10,10 +10,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.FileReader;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Julia on 3/7/14.
@@ -28,7 +25,7 @@ public class InfoStore {
     private String resultFieldName;
     private String dbHost;
 
-    private String[] featuresInModel;
+    private List<Feature> featuresInModel;
 
     double testRecordPercentage;
     double[] errorToleranceRate;
@@ -55,7 +52,7 @@ public class InfoStore {
     public DBFieldType getFeatureType(String featureName) {
         FeatureDimension feature = featureMap.get(featureName);
 
-        if ( feature != null) {
+        if (feature != null) {
             return feature.getFieldType();
         } else {
             return null;
@@ -127,11 +124,11 @@ public class InfoStore {
         this.errorToleranceRate = errorToleranceRate;
     }
 
-    public String[] getFeaturesInModel() {
+    public List<Feature> getFeaturesInModel() {
         return featuresInModel;
     }
 
-    public void setFeaturesInModel(String[] featuresInModel) {
+    public void setFeaturesInModel(List<Feature> featuresInModel) {
         this.featuresInModel = featuresInModel;
     }
 
@@ -163,7 +160,7 @@ public class InfoStore {
             int i = 0;
             while (iter.hasNext()) {
                 errorToleranceRate[i] = iter.next();
-                i ++;
+                i++;
             }
             this.setErrorToleranceRate(errorToleranceRate);
             String tableName = (String) root.get("tableName");
@@ -189,13 +186,39 @@ public class InfoStore {
             }
 
             JSONArray fm = (JSONArray) root.get("featuresInModel");
-            String[] featuresInModel = new String[fm.size()];
-            Iterator<String> iterS = fm.iterator();
-            i = 0;
+            List<Feature> featuresInModel = new ArrayList<Feature>();
+            Iterator<JSONObject> iterS = fm.iterator();
             while (iterS.hasNext()) {
-                featuresInModel[i] = iterS.next();
-                i ++;
+                JSONObject currentFeature = iterS.next();
+                Boolean isEnabled = (Boolean) currentFeature.get("enabled");
+                if ((isEnabled != null) && (isEnabled.booleanValue() == false)) {
+                    continue;
+                }
+
+                String featureName = (String) currentFeature.get("name");
+                Feature feature = new Feature(featureName);
+
+                JSONObject function = (JSONObject) currentFeature.get("function");
+                if (function != null) {
+                    String functionName = (String) function.get("name");
+                    FeatureFunction featureFunction = new FeatureFunction(functionName);
+                    JSONArray args = (JSONArray) function.get("arguments");
+
+                    if ((args != null) && (args.size() > 0)) {
+                        double arguments[] = new double[tolerances.size()];//(Double) root.get("errorToleranceRate");
+                        Iterator<Double> iterA = args.iterator();
+                        i = 0;
+                        while (iterA.hasNext()) {
+                            arguments[i] = iterA.next();
+                            i++;
+                        }
+                        featureFunction.setArguments(arguments);
+                    }
+                    feature.setFunction(featureFunction);
+                }
+                featuresInModel.add(feature);
             }
+
             this.setFeaturesInModel(featuresInModel);
 
         } catch (Exception e) {

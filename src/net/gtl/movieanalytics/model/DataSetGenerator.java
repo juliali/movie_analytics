@@ -80,10 +80,10 @@ public class DataSetGenerator {
 
 
     public static double[] getTestInput(Map<String, Double> map) {
-        int len = DBReader.paramFields.length;
+        int len = DBReader.paramFields.size();
         double[] inputs = new double[len];
         for (int i = 0; i < len; i++) {
-            String fieldName = DBReader.paramFields[i];
+            String fieldName = DBReader.paramFields.get(i).getName();
             double value = map.get(fieldName).doubleValue();
             inputs[i] = value;
         }

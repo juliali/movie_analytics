@@ -3,7 +3,7 @@
  * proprietary and confidential material and its use is subject to license terms.
  */
 
-package net.gtl.movieanalytics.model;
+package net.gtl.movieanalytics.data;
 
 /**
  * Created by Julia on 3/7/14.

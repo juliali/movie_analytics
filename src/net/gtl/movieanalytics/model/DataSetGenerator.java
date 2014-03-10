@@ -5,6 +5,8 @@
 
 package net.gtl.movieanalytics.model;
 
+import net.gtl.movieanalytics.data.TestDataStore;
+
 import java.sql.SQLException;
 import java.util.*;
 
@@ -12,14 +14,9 @@ import java.util.*;
  * Created by Julia on 3/4/14.
  */
 public class DataSetGenerator {
-    private static InfoStore infoStore = InfoStore.getInstance();
 
-    private List<Map<String, Object>> testSet;
-    private List<Map<String, Double>> testDataSet;
-    private double[][] x;
-    private double[] y;
+    private static TestDataStore tdStore = TestDataStore.getInstance();
 
-    private DBReader reader;
 
     public static Set<Integer> getTestDataRowNumbers(int totalRecordNum) {
         int testRecordNum = (int) (totalRecordNum * DBReader.testRecordPercentage);
@@ -36,29 +33,32 @@ public class DataSetGenerator {
     }
 
     public DataSetGenerator() {
-        reader = new DBReader();
+    }
 
+    public void doTrainning() {
+        DBReader reader = new DBReader();
         reader.trainingData();
 
-        this.x = reader.getX();
-        this.y = reader.getY();
+        double[][] x = reader.getX();
+        double[] y = reader.getY();
 
+        reader.closeDBConnection();
+        LinearRegression lr = new LinearRegression(x, y);
+    }
 
+    public void getTestDataSet()  {
+        DBReader reader = new DBReader();
+        try {
+            tdStore.setTestSet(reader.getTestDataSets());
+            tdStore.setTestDataSet(reader.convertTestDataSet(tdStore.getTestSet()));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         reader.closeDBConnection();
     }
 
-    public void getTestDataSet() {
-        reader.convertTestDataSet();
-        this.testDataSet = reader.getTestDataSet();
-        this.testSet = reader.getTestSet();
-    }
-
-    public int getTestDataSize() {
-        return testDataSet.size();
-    }
-
     public double[] getPredictionInput(String chineseName) {
-        //DBReader reader = new DBReader();
+        DBReader reader = new DBReader();
         Map<String, Double> map = null;
         try {
             reader.initDBConnection();
@@ -69,7 +69,6 @@ public class DataSetGenerator {
             reader.closeDBConnection();
         }
 
-
         if (map == null) {
             return null;
         } else {
@@ -77,12 +76,9 @@ public class DataSetGenerator {
         }
     }
 
-    public double[] getTestInput(int seqNum) {
-        Map<String, Double> map = this.testDataSet.get(seqNum);
-        return getTestInput(map);
-    }
 
-    public double[] getTestInput(Map<String, Double> map) {
+
+    public static double[] getTestInput(Map<String, Double> map) {
         int len = DBReader.paramFields.length;
         double[] inputs = new double[len];
         for (int i = 0; i < len; i++) {
@@ -96,7 +92,7 @@ public class DataSetGenerator {
 
     public double getTestActualResult(String chineseName) {
         double revenue = -1;
-        //DBReader reader = new DBReader();
+        DBReader reader = new DBReader();
         try {
             reader.initDBConnection();
             revenue = reader.getActualRevenue(chineseName);
@@ -106,47 +102,5 @@ public class DataSetGenerator {
             reader.closeDBConnection();
         }
         return revenue;
-    }
-
-    public double getTestActualResult(int seqNum) {
-        Map<String, Double> map = this.testDataSet.get(seqNum);
-        return getTestActualResult(map);
-    }
-
-    public double getTestActualResult(Map<String, Double> map) {
-        //Map<String, Double> map = this.testDataSet.get(seqNum);
-        double value = map.get(DBReader.resultFieldName).doubleValue();
-        return value;
-    }
-
-    public String getTestDataString(int seqNum) {
-        StringBuffer sBuff = new StringBuffer();
-        Map<String, Object> map = testSet.get(seqNum);
-
-        String name = "" + map.get("chinese_name");
-
-        for (int i = 0; i < DBReader.paramFields.length; i++) {
-            String key = DBReader.paramFields[i];
-            String value = "" + map.get(key);
-            String[] tmps = value.split(" ");
-            int subNum = infoStore.getFeatureSubItemNum(key);
-            if (tmps.length > subNum){ //DBReader.paramFieldItemNumber[i]) {
-                value = "";
-                for (int j = 0; j < subNum /*DBReader.paramFieldItemNumber[i]*/; j++) {
-                    value += tmps[j] + " ";
-                }
-            }
-            sBuff.append(key + ": " + value + ", ");
-        }
-
-        return "[" + name + "] -- " + sBuff.toString();
-    }
-
-    public double[] getY() {
-        return y;
-    }
-
-    public double[][] getX() {
-        return x;
     }
 }

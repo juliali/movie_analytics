@@ -3,7 +3,7 @@
  * proprietary and confidential material and its use is subject to license terms.
  */
 
-package net.gtl.movieanalytics.model;
+package net.gtl.movieanalytics.data;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -33,9 +33,11 @@ public class InfoStore {
     double testRecordPercentage;
     double errorToleranceRate;
 
+    //private double[] parameters;
+
     private InfoStore() {
         featureMap = new HashMap<String, FeatureDimension>();
-        readJsonFile("/Users/Julia/workspace/movie_analytics/data/info.json");
+        readJsonFile(System.getenv("INFO_FILE_PATH"));
     }
 
     public static InfoStore getInstance() {
@@ -134,6 +136,19 @@ public class InfoStore {
     public void setFeaturesInModel(String[] featuresInModel) {
         this.featuresInModel = featuresInModel;
     }
+
+    /*public double[] getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(double[] parameters) {
+        this.parameters = parameters;
+        for (int i = 0; i < this.parameters.length; i ++) {
+            System.out.print("p" + i + ": " + this.parameters[i] + "; ");
+        }
+        System.out.println("\n");
+    }
+    */
 
     private void readJsonFile(String path) {
         JSONParser parser = new JSONParser();

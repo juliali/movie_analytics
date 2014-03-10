@@ -5,6 +5,7 @@
 
 package net.gtl.movieanalytics.model;
 
+import net.gtl.movieanalytics.data.FeatureStore;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 /**
@@ -12,14 +13,14 @@ import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
  */
 public class LinearRegression {
 
-    private double[] parameters;
+    //private double[] parameters;
+    private static FeatureStore featureStore = FeatureStore.getInstance();
 
     public LinearRegression(double[][] x, double[] y) {
-        parameters = estimateParameter(x,y);
-        for (int i = 0; i < parameters.length; i ++) {
-            System.out.print("p" + i + ": " + parameters[i] + "; ");
-        }
-        System.out.println("\n");
+        double[] parameters = estimateParameter(x,y);
+        featureStore.setParameters(parameters);
+
+        //infoStore.setParameters(parameters);
     }
 
     private void printTestData(double[][] x, double[] y) {
@@ -43,9 +44,9 @@ public class LinearRegression {
         return ols.estimateRegressionParameters();
     }
 
-    public double[] getParameters()  {
-        return parameters;
-    }
+    //public double[] getParameters()  {
+    //    return parameters;
+    //}
 
 
 }

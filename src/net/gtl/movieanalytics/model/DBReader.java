@@ -5,6 +5,11 @@
 
 package net.gtl.movieanalytics.model;
 
+import net.gtl.movieanalytics.data.AverageCountPair;
+import net.gtl.movieanalytics.data.DBFieldType;
+import net.gtl.movieanalytics.data.FeatureStore;
+import net.gtl.movieanalytics.data.InfoStore;
+
 import java.sql.*;
 import java.util.*;
 
@@ -30,6 +35,8 @@ public class DBReader {
     private String sourceTableName = infoStore.getSourceTableName();
     private String hostIP = infoStore.getDbHost();
 
+    private static FeatureStore featureStore = FeatureStore.getInstance();
+
     private static final String idStr = "Id";
     private String anyOne = "ANYONE_HASNORECORD";
 
@@ -39,18 +46,18 @@ public class DBReader {
 
 
 
-    private List<Map<String, Object>> trainingSet;
-    private List<Map<String, Object>> testSet;
+    //private List<Map<String, Object>> trainingSet;
+    //private List<Map<String, Object>> testSet;
 
     private List<Integer> testDataIdList;
 
-    private Map<String, Map<String, AverageCountPair>> numericValues;
+    //private Map<String, Map<String, AverageCountPair>> numericValues;
 
 
     private double[][] x;
     private double[] y;
 
-    private List<Map<String, Double>> testDataSet;
+    //private List<Map<String, Double>> testDataSet;
 
     public DBReader() {
         initDBConnection();
@@ -58,8 +65,8 @@ public class DBReader {
 
     public void trainingData() {
         try {
-            getDataSets();
-            getInputValues();
+            List<Map<String, Object>> trainingSet = getTrainingDataSets();
+            getInputValues(trainingSet);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -142,14 +149,15 @@ public class DBReader {
 
     }
 
-    private void getDataSets() throws SQLException {
-        trainingSet = new ArrayList<Map<String, Object>>();
-        testSet = new ArrayList<Map<String, Object>>();
+    private List<Map<String, Object>> getTrainingDataSets() throws SQLException {
+        List<Map<String, Object>> trainingSet = new ArrayList<Map<String, Object>>();
+        //testSet = new ArrayList<Map<String, Object>>();
         String countQuery = "select count(*) as tn from " + tableName + " where " + condition;
         rs = stmt.executeQuery(countQuery);
         rs.next();
         int totalRecordNum = rs.getInt("tn");
         Set<Integer> testDataRowNumbers = DataSetGenerator.getTestDataRowNumbers(totalRecordNum);
+        featureStore.setTestRowNumber(testDataRowNumbers);
 
         String query = "select * from " + tableName + " where " + condition;
         rs = stmt.executeQuery(query);
@@ -165,17 +173,46 @@ public class DBReader {
             }
 
             if (testDataRowNumbers.contains(rowNum)) {
-                this.testSet.add(map);
-
                 int id = rs.getInt(idStr);
                 testDataIdList.add(id);
             } else {
-                this.trainingSet.add(map);
+                trainingSet.add(map);
 
             }
             rowNum++;
         }
-        return;
+        return trainingSet;
+    }
+
+    public List<Map<String, Object>> getTestDataSets() throws SQLException {
+        List<Map<String, Object>> testSet = new ArrayList<Map<String, Object>>();
+        String countQuery = "select count(*) as tn from " + tableName + " where " + condition;
+        rs = stmt.executeQuery(countQuery);
+        rs.next();
+        Set<Integer> testDataRowNumbers = featureStore.getTestRowNumber(); //DataSetGenerator.getTestDataRowNumbers(totalRecordNum);
+
+        String query = "select * from " + tableName + " where " + condition;
+        rs = stmt.executeQuery(query);
+
+        testDataIdList = new ArrayList<Integer>();
+
+        int rowNum = 1;
+        while (rs.next()) {
+
+            HashMap<String, Object> map = new HashMap<String, Object>();
+            for (int i = 0; i < fieldNames.length; i++) {
+                map.put(fieldNames[i], rs.getObject(fieldNames[i]));
+            }
+
+            if (testDataRowNumbers.contains(rowNum)) {
+                testSet.add(map);
+
+                int id = rs.getInt(idStr);
+                testDataIdList.add(id);
+            }
+            rowNum++;
+        }
+        return testSet;
     }
 
     private Map<String, AverageCountPair> getOneDimension(String query, String nameFieldName, String valueFieldName, String countFieldName)
@@ -232,7 +269,7 @@ public class DBReader {
     }
 
     private void getNumericValueFromDB() throws SQLException {
-        numericValues = new HashMap<String, Map<String, AverageCountPair>>();
+        Map<String, Map<String, AverageCountPair>> numericValues = new HashMap<String, Map<String, AverageCountPair>>();
 
         String countFieldName = "cnt";
         String valueFieldName = "average";
@@ -292,6 +329,7 @@ public class DBReader {
                 numericValues.put(fieldName, map);
             }
         }
+        featureStore.setNumericValues(numericValues);
     }
 
     private double[] getNumericValueForOneRecord(Map<String, Object> map) {
@@ -331,6 +369,7 @@ public class DBReader {
                     }
 
                     //System.out.println("fieldName: " + fieldName + "; subItemName: " + subItemName);
+                    Map<String, Map<String, AverageCountPair>> numericValues = featureStore.getNumericValues();
                     AverageCountPair subItemValue = numericValues.get(fieldName).get(subItemName);
 
                     if (subItemValue != null) {
@@ -347,7 +386,7 @@ public class DBReader {
         return result;
     }
 
-    private void getInputValues() throws SQLException {
+    private void getInputValues(List<Map<String, Object>> trainingSet) throws SQLException {
         getNumericValueFromDB();
 
         x = new double[trainingSet.size()][paramFields.length];
@@ -362,8 +401,9 @@ public class DBReader {
         }
     }
 
-    public void convertTestDataSet() {
-        testDataSet = new ArrayList<Map<String, Double>>();
+    public List<Map<String, Double>> convertTestDataSet(List<Map<String, Object>> testSet) {
+
+        List<Map<String, Double>> testDataSet = new ArrayList<Map<String, Double>>();
 
         for (int i = 0; i < testSet.size(); i++) {
             Map<String, Double> dataMap = new HashMap<String, Double>();
@@ -380,7 +420,7 @@ public class DBReader {
             testDataSet.add(dataMap);
         }
 
-        return;
+        return testDataSet;
     }
 
     public double[] getY() {
@@ -391,73 +431,11 @@ public class DBReader {
         return x;
     }
 
-    public List<Map<String, Object>> getTestSet() {
+    /*public List<Map<String, Object>> getTestSet() {
         return testSet;
     }
 
     public List<Map<String, Double>> getTestDataSet() {
         return testDataSet;
-    }
-
-    /*public String getTestDataString(int seqNum) {
-        StringBuffer sBuff = new StringBuffer();
-        Map<String, Object> map = testSet.get(seqNum);
-
-        String name = "" + map.get("chinese_name");
-
-        for (int i = 0; i < paramFields.length; i++) {
-            String key = paramFields[i];
-            String value = "" + map.get(key);
-            String[] tmps = value.split(" ");
-            if (tmps.length > paramFieldItemNumber[i]) {
-                value = "";
-                for (int j = 0; j < paramFieldItemNumber[i]; j++) {
-                    value += tmps[j] + " ";
-                }
-            }
-            sBuff.append(key + ": " + value + ", ");
-        }
-
-        return "[" + name + "] -- " + sBuff.toString();
-    }
-    */
-
-    class AverageCountPair {
-        private float average;
-        private int count;
-
-        public AverageCountPair(float avg, int cnt) {
-            average = avg;
-            count = cnt;
-        }
-
-        public float getAverage() {
-            return average;
-        }
-
-        public void setAverage(float average) {
-            this.average = average;
-        }
-
-        public int getCount() {
-            return count;
-        }
-
-        public void setCount(int count) {
-            this.count = count;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            AverageCountPair that = (AverageCountPair) o;
-
-            if (Float.compare(that.average, average) != 0) return false;
-            if (count != that.count) return false;
-
-            return true;
-        }
-    }
+    }*/
 }

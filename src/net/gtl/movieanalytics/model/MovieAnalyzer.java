@@ -5,6 +5,10 @@
 
 package net.gtl.movieanalytics.model;
 
+import net.gtl.movieanalytics.data.FeatureStore;
+import net.gtl.movieanalytics.data.InfoStore;
+import net.gtl.movieanalytics.data.TestDataStore;
+
 import java.text.NumberFormat;
 
 /**
@@ -13,16 +17,21 @@ import java.text.NumberFormat;
 public class MovieAnalyzer {
 
     private static InfoStore infoStore = InfoStore.getInstance();
+    private static TestDataStore tdStore = TestDataStore.getInstance();
+    private static FeatureStore featureStore = FeatureStore.getInstance();
+
     private static final double errorTolerance = infoStore.getErrorToleranceRate();
-    DataSetGenerator dsGen;
+    //DataSetGenerator dsGen;
     double[] parameters;
 
     public MovieAnalyzer() {
-        dsGen = new DataSetGenerator();
-        double[][] x = dsGen.getX();
-        double[] y = dsGen.getY();
-        LinearRegression lr = new LinearRegression(x, y);
-        parameters = lr.getParameters();
+        //dsGen = new DataSetGenerator();
+        //double[][] x = dsGen.getX();
+        //double[] y = dsGen.getY();
+        //LinearRegression lr = new LinearRegression(x, y);
+        DataSetGenerator dsGen = new DataSetGenerator();
+        dsGen.doTrainning();
+        parameters = featureStore.getParameters();
     }
 
     private double predict(double[] dataset) {
@@ -42,6 +51,8 @@ public class MovieAnalyzer {
     }
 
     public PredictionResult predictOneMovie(String chineseName) {
+        DataSetGenerator dsGen = new DataSetGenerator();
+
         double[] data = dsGen.getPredictionInput(chineseName);
         NumberFormat nf = NumberFormat.getPercentInstance();
         String result = "";
@@ -69,14 +80,16 @@ public class MovieAnalyzer {
 
     public void executeTest() {
         NumberFormat nf   =   NumberFormat.getPercentInstance();
+        DataSetGenerator dsGen = new DataSetGenerator();
         dsGen.getTestDataSet();
-        int size = dsGen.getTestDataSize();
+
+        int size = tdStore.getTestDataSize();
         int bingoNum = 0;
 
         for (int i = 0; i < size; i ++) {
-            String info = dsGen.getTestDataString(i);
-            double[] inputs = dsGen.getTestInput(i);
-            double actualResult = dsGen.getTestActualResult(i);
+            String info = tdStore.getTestDataString(i);
+            double[] inputs = tdStore.getTestInput(i);
+            double actualResult = tdStore.getTestActualResult(i);
 
             double predictResult = predict(inputs);
 

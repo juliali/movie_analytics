@@ -1,6 +1,6 @@
 {
     "testRecordPercentage": 0.3,
-    "errorToleranceRate": 10.0,
+    "errorToleranceRate": 1.0,
     "dbHost": "10.34.32.35",
     "tableName": "mtime_revenue_search_3",
     "sourceTableName": "movie",
@@ -24,7 +24,7 @@
         {
             "name": "starring",
             "type": "String",
-            "subNum": 1,
+            "subNum": 3,
         },
         {
             "name": "rate",
@@ -77,5 +77,5 @@
             "subNum": 1,
         }
     ],
-    "featuresInModel": ["search_num", "director", "starring"]
+    "featuresInModel": ["director", "starring", "search_num", "rate"]
 }

@@ -24,16 +24,6 @@ public class TestDataStore {
     private int testDataSize;
 
     private TestDataStore() {
-        /*DBReader reader = new DBReader();
-
-        testSet = null;
-        try {
-            testSet = reader.getTestDataSets();
-            testDataSet = reader.convertTestDataSet(testSet);
-            testDataSize = testDataSet.size();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }*/
     }
 
     public static TestDataStore getInstance() {
@@ -42,10 +32,6 @@ public class TestDataStore {
 
     public List<Map<String, Object>> getTestSet() {
         return testSet;
-    }
-
-    public List<Map<String, Double>> getTestDataSet() {
-        return testDataSet;
     }
 
     public void setTestSet(List<Map<String, Object>> testSet) {
@@ -72,7 +58,6 @@ public class TestDataStore {
     }
 
     public double getTestActualResult(Map<String, Double> map) {
-        //Map<String, Double> map = this.testDataSet.get(seqNum);
         double value = map.get(DBReader.resultFieldName).doubleValue();
         return value;
     }
@@ -84,14 +69,14 @@ public class TestDataStore {
 
         String name = "" + map.get("chinese_name");
 
-        for (int i = 0; i < DBReader.paramFields.length; i++) {
-            String key = DBReader.paramFields[i];
+        for (int i = 0; i < DBReader.paramFields.size(); i++) {
+            String key = DBReader.paramFields.get(i).getName();
             String value = "" + map.get(key);
             String[] tmps = value.split(" ");
             int subNum = infoStore.getFeatureSubItemNum(key);
-            if (tmps.length > subNum){ //DBReader.paramFieldItemNumber[i]) {
+            if (tmps.length > subNum){
                 value = "";
-                for (int j = 0; j < subNum /*DBReader.paramFieldItemNumber[i]*/; j++) {
+                for (int j = 0; j < subNum; j++) {
                     value += tmps[j] + " ";
                 }
             }

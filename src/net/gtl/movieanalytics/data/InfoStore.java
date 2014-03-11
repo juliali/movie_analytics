@@ -10,10 +10,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.FileReader;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Julia on 3/7/14.
@@ -28,12 +25,10 @@ public class InfoStore {
     private String resultFieldName;
     private String dbHost;
 
-    private String[] featuresInModel;
+    private List<Feature> featuresInModel;
 
     double testRecordPercentage;
-    double errorToleranceRate;
-
-    //private double[] parameters;
+    double[] errorToleranceRate;
 
     private InfoStore() {
         featureMap = new HashMap<String, FeatureDimension>();
@@ -57,7 +52,7 @@ public class InfoStore {
     public DBFieldType getFeatureType(String featureName) {
         FeatureDimension feature = featureMap.get(featureName);
 
-        if ( feature != null) {
+        if (feature != null) {
             return feature.getFieldType();
         } else {
             return null;
@@ -121,19 +116,19 @@ public class InfoStore {
         this.testRecordPercentage = testRecordPercentage;
     }
 
-    public double getErrorToleranceRate() {
+    public double[] getErrorToleranceRate() {
         return errorToleranceRate;
     }
 
-    public void setErrorToleranceRate(double errorToleranceRate) {
+    public void setErrorToleranceRate(double[] errorToleranceRate) {
         this.errorToleranceRate = errorToleranceRate;
     }
 
-    public String[] getFeaturesInModel() {
+    public List<Feature> getFeaturesInModel() {
         return featuresInModel;
     }
 
-    public void setFeaturesInModel(String[] featuresInModel) {
+    public void setFeaturesInModel(List<Feature> featuresInModel) {
         this.featuresInModel = featuresInModel;
     }
 
@@ -157,7 +152,16 @@ public class InfoStore {
             JSONObject root = (JSONObject) parser.parse(new FileReader(path));
             double testRecordPercentage = (Double) root.get("testRecordPercentage");
             this.setTestRecordPercentage(testRecordPercentage);
-            double errorToleranceRate = (Double) root.get("errorToleranceRate");
+
+            JSONArray tolerances = (JSONArray) root.get("errorToleranceRate");
+
+            double errorToleranceRate[] = new double[tolerances.size()];//(Double) root.get("errorToleranceRate");
+            Iterator<Double> iter = tolerances.iterator();
+            int i = 0;
+            while (iter.hasNext()) {
+                errorToleranceRate[i] = iter.next();
+                i++;
+            }
             this.setErrorToleranceRate(errorToleranceRate);
             String tableName = (String) root.get("tableName");
             this.setTableName(tableName);
@@ -182,13 +186,39 @@ public class InfoStore {
             }
 
             JSONArray fm = (JSONArray) root.get("featuresInModel");
-            String[] featuresInModel = new String[fm.size()];
-            Iterator<String> iter = fm.iterator();
-            int i = 0;
-            while (iter.hasNext()) {
-                featuresInModel[i] = iter.next();
-                i ++;
+            List<Feature> featuresInModel = new ArrayList<Feature>();
+            Iterator<JSONObject> iterS = fm.iterator();
+            while (iterS.hasNext()) {
+                JSONObject currentFeature = iterS.next();
+                Boolean isEnabled = (Boolean) currentFeature.get("enabled");
+                if ((isEnabled != null) && (isEnabled.booleanValue() == false)) {
+                    continue;
+                }
+
+                String featureName = (String) currentFeature.get("name");
+                Feature feature = new Feature(featureName);
+
+                JSONObject function = (JSONObject) currentFeature.get("function");
+                if (function != null) {
+                    String functionName = (String) function.get("name");
+                    FeatureFunction featureFunction = new FeatureFunction(functionName);
+                    JSONArray args = (JSONArray) function.get("arguments");
+
+                    if ((args != null) && (args.size() > 0)) {
+                        double arguments[] = new double[tolerances.size()];//(Double) root.get("errorToleranceRate");
+                        Iterator<Double> iterA = args.iterator();
+                        i = 0;
+                        while (iterA.hasNext()) {
+                            arguments[i] = iterA.next();
+                            i++;
+                        }
+                        featureFunction.setArguments(arguments);
+                    }
+                    feature.setFunction(featureFunction);
+                }
+                featuresInModel.add(feature);
             }
+
             this.setFeaturesInModel(featuresInModel);
 
         } catch (Exception e) {

@@ -1,6 +1,10 @@
 {
     "testRecordPercentage": 0.3,
     "errorToleranceRate": [1.0,3.0,10.0],
+    "testDataSource": {
+        "newGenerated": false,
+        "saveToFilePath": "/tmp/testdatasetId.txt"
+    }
     "dbHost": "10.34.32.35",
     "tableName": "mtime_revenue_search_3",
     "sourceTableName": "movie",
@@ -80,11 +84,19 @@
     "featuresInModel": [
         {
             "name": "director",
-            "enabled": false
+            "enabled": true,
+            "function": {
+                "name": "multiple",
+                "arguments": [2.0]
+            }
         },
         {
             "name": "starring",
-            "enabled": false
+            "enabled": false,
+            "function": {
+               "name": "multiple",
+               "arguments": [3.0]
+            }
         },
         {
             "name": "type",
@@ -96,7 +108,7 @@
         },
         {
             "name": "votes",
-            "enabled": true,
+            "enabled": false,
             "function": {
                 "name": "multiple",
                 "arguments": [0.001]
@@ -109,7 +121,7 @@
         },
         {
             "name": "search_num",
-            "enabled": true,
+            "enabled": false,
             "function": {
                 "name": "loge"
             }

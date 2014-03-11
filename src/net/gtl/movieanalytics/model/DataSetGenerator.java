@@ -20,6 +20,8 @@ public class DataSetGenerator {
     public static final double testRecordPercentage = InfoStore.getInstance().getTestRecordPercentage();
 
     public static Set<Integer> getTestDataRowNumbers(int totalRecordNum) {
+
+
         int testRecordNum = (int) (totalRecordNum * testRecordPercentage);
         Set<Integer> randomSet = new HashSet<Integer>();
         Random random = new Random();
@@ -31,6 +33,7 @@ public class DataSetGenerator {
         }
 
         return randomSet;
+
     }
 
     public DataSetGenerator() {
@@ -47,7 +50,7 @@ public class DataSetGenerator {
         LinearRegression lr = new LinearRegression(x, y);
     }
 
-    public void getTestDataSet()  {
+    public void getTestDataSet() {
         DBReader reader = new DBReader();
         try {
             tdStore.setTestSet(reader.getTestDataSets());
@@ -76,7 +79,6 @@ public class DataSetGenerator {
             return getTestInput(map);
         }
     }
-
 
 
     public static double[] getTestInput(Map<String, Double> map) {

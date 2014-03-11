@@ -29,6 +29,8 @@ public class DBReader {
             + " and director <> '' and length(director) != character_length(director) "
             + " and starring <> '' and length(starring) != character_length(starring) ";
 
+    private String datasetOrder = " order by id asc ";
+
     private String sourceTableName = infoStore.getSourceTableName();
     private String hostIP = infoStore.getDbHost();
 
@@ -40,8 +42,6 @@ public class DBReader {
     private Connection conn = null;
     private Statement stmt = null;
     private ResultSet rs = null;
-
-    private List<Integer> testDataIdList;
 
     private double[][] x;
     private double[] y;
@@ -136,6 +136,40 @@ public class DBReader {
     }
 
     private List<Map<String, Object>> getTrainingDataSets() throws SQLException {
+        boolean isNewGenerated = infoStore.isNewGeneratedTestDataSet();
+
+        if (isNewGenerated) {
+            return getNewGeneratedTrainingDataSets();
+        } else {
+            return getTrainingDataSetsBasedOnExistingTestDataSet();
+        }
+    }
+
+    private List<Map<String, Object>> getTrainingDataSetsBasedOnExistingTestDataSet()  throws  SQLException {
+        String commonCondition = getIdsCondition(true);
+        List<Map<String, Object>> trainingSet = new ArrayList<Map<String, Object>>();
+        String query  = "select * from " + tableName + " where " + condition + commonCondition;
+        rs = stmt.executeQuery(query);
+
+        while (rs.next()) {
+
+            HashMap<String, Object> map = new HashMap<String, Object>();
+            for (int i = 0; i < fieldNames.length; i++) {
+
+                try {
+                    Object value = rs.getObject(fieldNames[i]);
+                    map.put(fieldNames[i], value);
+                } catch (SQLException e) {
+                    System.err.println("The field of " + fieldNames[i] + " doesn't exist in training dataset.");
+                }
+            }
+            trainingSet.add(map);
+        }
+
+        return trainingSet;
+    }
+
+    private List<Map<String, Object>> getNewGeneratedTrainingDataSets() throws SQLException {
         List<Map<String, Object>> trainingSet = new ArrayList<Map<String, Object>>();
 
         String countQuery = "select count(*) as tn from " + tableName + " where " + condition;
@@ -143,12 +177,11 @@ public class DBReader {
         rs.next();
         int totalRecordNum = rs.getInt("tn");
         Set<Integer> testDataRowNumbers = DataSetGenerator.getTestDataRowNumbers(totalRecordNum);
-        featureStore.setTestRowNumber(testDataRowNumbers);
 
-        String query = "select * from " + tableName + " where " + condition;
+        String query = "select * from " + tableName + " where " + condition + datasetOrder;
         rs = stmt.executeQuery(query);
 
-        testDataIdList = new ArrayList<Integer>();
+        List<Integer> testDataIdList = new ArrayList<Integer>();
 
         int rowNum = 1;
         while (rs.next()) {
@@ -169,11 +202,27 @@ public class DBReader {
                 testDataIdList.add(id);
             } else {
                 trainingSet.add(map);
-
             }
             rowNum++;
         }
+        featureStore.setTestDataSetIds(testDataIdList);
+
         return trainingSet;
+    }
+
+    private String getIdsCondition(boolean isExcluded) {
+        String commonCondition = "";
+        String idString = featureStore.getTestDataSetIds();//featureStore.getTestDataSetIds();
+
+        if (!idString.equals("")) {
+            String str = "";
+            if (isExcluded) {
+                str = " NOT ";
+            }
+            commonCondition =   " and " + idStr + str + " in (" + idString + ")";
+        }
+
+        return commonCondition;
     }
 
     public List<Map<String, Object>> getTestDataSets() throws SQLException {
@@ -181,20 +230,14 @@ public class DBReader {
         String countQuery = "select count(*) as tn from " + tableName + " where " + condition;
         rs = stmt.executeQuery(countQuery);
         rs.next();
-        Set<Integer> testDataRowNumbers = featureStore.getTestRowNumber();
 
-        String query = "select * from " + tableName + " where " + condition;
+        String commonCondition = getIdsCondition(false);
+        String query = "select * from " + tableName + " where " + condition + commonCondition;
         rs = stmt.executeQuery(query);
 
-        testDataIdList = new ArrayList<Integer>();
-
-        int rowNum = 1;
         while (rs.next()) {
-
             HashMap<String, Object> map = new HashMap<String, Object>();
             for (int i = 0; i < fieldNames.length; i++) {
-                //map.put(fieldNames[i], rs.getObject(fieldNames[i]));
-
                 try {
                     Object value = rs.getObject(fieldNames[i]);
                     map.put(fieldNames[i], value);
@@ -202,14 +245,7 @@ public class DBReader {
                     System.err.println("The field of " + fieldNames[i] + " doesn't exist in test dataset.");
                 }
             }
-
-            if (testDataRowNumbers.contains(rowNum)) {
-                testSet.add(map);
-
-                int id = rs.getInt(idStr);
-                testDataIdList.add(id);
-            }
-            rowNum++;
+            testSet.add(map);
         }
         return testSet;
     }
@@ -272,18 +308,8 @@ public class DBReader {
 
         String countFieldName = "cnt";
         String valueFieldName = "average";
-        String idString = "";
 
-        String commonCondition = "";
-
-        for (Integer id : this.testDataIdList) {
-            idString += id + ",";
-        }
-
-        if (!idString.equals("")) {
-            idString = idString.substring(0, idString.length() - 1);
-            commonCondition = " and " + idStr + " NOT in (" + idString + ")";
-        }
+        String commonCondition = getIdsCondition(true);
 
         for (int i = 0; i < paramFields.size(); i++) {
 

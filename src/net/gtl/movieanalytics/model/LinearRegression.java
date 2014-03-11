@@ -33,7 +33,7 @@ public class LinearRegression {
         }
     }
     private double[] estimateParameter(double[][] x, double[] y) {
-        printTestData(x, y);
+        //printTestData(x, y);
 
         OLSMultipleLinearRegression ols = new OLSMultipleLinearRegression();
         ols.newSampleData(y, x);

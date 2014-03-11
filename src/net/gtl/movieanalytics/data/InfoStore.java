@@ -25,6 +25,9 @@ public class InfoStore {
     private String resultFieldName;
     private String dbHost;
 
+    private boolean isNewGeneratedTestDataSet = true;
+    private String testDataSetIdFilePath;
+
     private List<Feature> featuresInModel;
 
     double testRecordPercentage;
@@ -132,18 +135,21 @@ public class InfoStore {
         this.featuresInModel = featuresInModel;
     }
 
-    /*public double[] getParameters() {
-        return parameters;
+    public boolean isNewGeneratedTestDataSet() {
+        return isNewGeneratedTestDataSet;
     }
 
-    public void setParameters(double[] parameters) {
-        this.parameters = parameters;
-        for (int i = 0; i < this.parameters.length; i ++) {
-            System.out.print("p" + i + ": " + this.parameters[i] + "; ");
-        }
-        System.out.println("\n");
+    public void setNewGeneratedTestDataSet(boolean isNewGeneratedTestDataSet) {
+        this.isNewGeneratedTestDataSet = isNewGeneratedTestDataSet;
     }
-    */
+
+    public String getTestDataSetIdFilePath() {
+        return testDataSetIdFilePath;
+    }
+
+    public void setTestDataSetIdFilePath(String testDataSetIdFilePath) {
+        this.testDataSetIdFilePath = testDataSetIdFilePath;
+    }
 
     private void readJsonFile(String path) {
         JSONParser parser = new JSONParser();
@@ -155,7 +161,7 @@ public class InfoStore {
 
             JSONArray tolerances = (JSONArray) root.get("errorToleranceRate");
 
-            double errorToleranceRate[] = new double[tolerances.size()];//(Double) root.get("errorToleranceRate");
+            double errorToleranceRate[] = new double[tolerances.size()];
             Iterator<Double> iter = tolerances.iterator();
             int i = 0;
             while (iter.hasNext()) {
@@ -169,6 +175,16 @@ public class InfoStore {
             this.setSourceTableName(sourceTableName);
             String resultFieldName = (String) root.get("resultFieldName");
             this.setResultFieldName(resultFieldName);
+
+            JSONObject tdObj = (JSONObject) root.get("testDataSource");
+            boolean isNew = (Boolean) tdObj.get("newGenerated");
+            String tdPath = (String) tdObj.get("saveToFilePath");
+            if ((tdPath == null) || (tdPath.equals(""))) {
+                isNew = true;
+            }
+            this.setNewGeneratedTestDataSet(isNew);
+            this.setTestDataSetIdFilePath(tdPath);
+
             String dbHost = (String) root.get("dbHost");
             this.setDbHost(dbHost);
 
@@ -205,7 +221,7 @@ public class InfoStore {
                     JSONArray args = (JSONArray) function.get("arguments");
 
                     if ((args != null) && (args.size() > 0)) {
-                        double arguments[] = new double[tolerances.size()];//(Double) root.get("errorToleranceRate");
+                        double arguments[] = new double[tolerances.size()];
                         Iterator<Double> iterA = args.iterator();
                         i = 0;
                         while (iterA.hasNext()) {

@@ -81,7 +81,7 @@ public class GoogleSearch {
                         con.setRequestMethod("GET");
 
                         //add request header
-                        con.setRequestProperty("User-Agent", "Mozilla/5.0");
+                        con.setRequestProperty("User-Agent", "Firefox/21.0");
 
                         int responseCode = con.getResponseCode();
 
@@ -142,11 +142,11 @@ public class GoogleSearch {
 
     }
 
-    public static void main(String[] args) throws Exception {
-        GoogleSearch search = new GoogleSearch();
-        search.getFilm();
-
-    }
+//    public static void main(String[] args) throws Exception {
+////        GoogleSearch search = new GoogleSearch();
+////        search.getFilm();
+//
+//    }
 
 
 }

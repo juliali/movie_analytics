@@ -10,12 +10,20 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 import edu.uci.ics.crawler4j.url.WebURL;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by pivotal on 2/28/14.
  */
 public class GoogleCrawler extends WebCrawler {
+
+
+
     /**
      * You should implement this function to specify whether
      * the given url should be crawled or not (based on your
@@ -53,6 +61,9 @@ public class GoogleCrawler extends WebCrawler {
 
         CrawlConfig config = new CrawlConfig();
         config.setCrawlStorageFolder(crawlStorageFolder);
+        config.setPolitenessDelay(1000);
+        config.setConnectionTimeout(60000);
+        config.setMaxDepthOfCrawling(1);
 
                 /*
                  * Instantiate the controller for this crawl.
@@ -61,6 +72,26 @@ public class GoogleCrawler extends WebCrawler {
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
         CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
+
+        // Get movie names which need to be searched from mysql
+        ArrayList<String> moviesList = new ArrayList<String>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://10.34.32.35:3306/movie_data?characterEncoding=UTF-8", "movie", "movie");
+
+            String sql = "select chinese_name from movie_revenue_58921";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            while (rs.next()){
+                String chineseName = rs.getString("chinese_name");
+                moviesList.add(chineseName);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
                 /*
                  * For each crawl, you need to add some seed urls. These are the first

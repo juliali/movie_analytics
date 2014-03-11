@@ -214,23 +214,29 @@ public class InfoStore {
                 String featureName = (String) currentFeature.get("name");
                 Feature feature = new Feature(featureName);
 
-                JSONObject function = (JSONObject) currentFeature.get("function");
-                if (function != null) {
-                    String functionName = (String) function.get("name");
-                    FeatureFunction featureFunction = new FeatureFunction(functionName);
-                    JSONArray args = (JSONArray) function.get("arguments");
+                JSONArray functions = (JSONArray) currentFeature.get("functions");
+                if (functions != null) {
+                    List<FeatureFunction> functionList = new ArrayList<FeatureFunction>();
+                    Iterator<JSONObject> funs = functions.iterator();
+                    while (funs.hasNext()) {
+                        JSONObject function = funs.next();
+                        String functionName = (String) function.get("name");
+                        FeatureFunction featureFunction = new FeatureFunction(functionName);
+                        JSONArray args = (JSONArray) function.get("arguments");
 
-                    if ((args != null) && (args.size() > 0)) {
-                        double arguments[] = new double[tolerances.size()];
-                        Iterator<Double> iterA = args.iterator();
-                        i = 0;
-                        while (iterA.hasNext()) {
-                            arguments[i] = iterA.next();
-                            i++;
+                        if ((args != null) && (args.size() > 0)) {
+                            double arguments[] = new double[tolerances.size()];
+                            Iterator<Double> iterA = args.iterator();
+                            i = 0;
+                            while (iterA.hasNext()) {
+                                arguments[i] = iterA.next();
+                                i++;
+                            }
+                            featureFunction.setArguments(arguments);
                         }
-                        featureFunction.setArguments(arguments);
+                        functionList.add(featureFunction);
                     }
-                    feature.setFunction(featureFunction);
+                    feature.setFunctions(functionList);
                 }
                 featuresInModel.add(feature);
             }

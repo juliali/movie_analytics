@@ -85,18 +85,24 @@
         {
             "name": "director",
             "enabled": true,
-            "function": {
-                "name": "multiple",
-                "arguments": [2.0]
-            }
+            "functions": [
+                {
+                    "name": "power"
+                    "arguments": [1.7]
+                },
+                {
+                    "name": "multiple"
+                    "arguments": [0.0001]
+                }
+            ]
         },
         {
             "name": "starring",
             "enabled": false,
-            "function": {
-               "name": "multiple",
-               "arguments": [3.0]
-            }
+            "functions": [{
+                "name": "power"
+                "arguments": [-0.8]
+            }]
         },
         {
             "name": "type",
@@ -109,10 +115,10 @@
         {
             "name": "votes",
             "enabled": false,
-            "function": {
+            "functions": [{
                 "name": "multiple",
                 "arguments": [0.001]
-            }
+            }]
 
         },
         {

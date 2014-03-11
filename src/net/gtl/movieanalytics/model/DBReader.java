@@ -20,7 +20,6 @@ public class DBReader {
     public static final String resultFieldName = infoStore.getResultFieldName();
 
 
-
     private String numericField = resultFieldName;
     private String[] fieldNames = infoStore.getAllFeatureNames();
 
@@ -145,10 +144,10 @@ public class DBReader {
         }
     }
 
-    private List<Map<String, Object>> getTrainingDataSetsBasedOnExistingTestDataSet()  throws  SQLException {
+    private List<Map<String, Object>> getTrainingDataSetsBasedOnExistingTestDataSet() throws SQLException {
         String commonCondition = getIdsCondition(true);
         List<Map<String, Object>> trainingSet = new ArrayList<Map<String, Object>>();
-        String query  = "select * from " + tableName + " where " + condition + commonCondition;
+        String query = "select * from " + tableName + " where " + condition + commonCondition;
         rs = stmt.executeQuery(query);
 
         while (rs.next()) {
@@ -219,7 +218,7 @@ public class DBReader {
             if (isExcluded) {
                 str = " NOT ";
             }
-            commonCondition =   " and " + idStr + str + " in (" + idString + ")";
+            commonCondition = " and " + idStr + str + " in (" + idString + ")";
         }
 
         return commonCondition;
@@ -409,31 +408,36 @@ public class DBReader {
 
             }
 
-            FeatureFunction function = this.paramFields.get(j).getFunction();
-            if (function == null) {
-                result[j] = itemValue;
-            } else {
-                FeatureFunctionType type = function.getType();
-                //System.out.println("Function type is " + type.toString());
-                double[] arguments = function.getArguments();
-                if (type == FeatureFunctionType.LOGE) {
-                    if (itemValue == 0) {
-                        result[j] = 0;
-                    } else {
-                        result[j] = Math.log(itemValue);
-                    }
-                } else if (type == FeatureFunctionType.MULTIPLE) {
-                    result[j] = itemValue * arguments[0];
-                } else if (type == FeatureFunctionType.POWER) {
-                    result[j] = Math.pow(itemValue, arguments[0]);
-                }
+            List<FeatureFunction> functionList = this.paramFields.get(j).getFunctions();
+            double resultValue = itemValue;
+            if ((functionList != null) && (functionList.size() != 0)) {
 
-                //if ((result[j] == Double.POSITIVE_INFINITY) || (result[j] == Double.NEGATIVE_INFINITY)) {
-                //    System.out.println(type.toString() + " : " + itemValue);
-                //}
+                for (int f = 0; f < functionList.size(); f++) {
+                    FeatureFunction function = functionList.get(f);
+                    FeatureFunctionType type = function.getType();
+                    double[] arguments = function.getArguments();
+                    resultValue = calculate(type, resultValue, arguments);
+                }
             }
+            result[j] = resultValue;
         }
         return result;
+    }
+
+    private double calculate(FeatureFunctionType type, double basedValue, double[] arguments) {
+        double resultValue = 0;
+        if (type == FeatureFunctionType.LOGE) {
+            if (basedValue == 0) {
+                resultValue = 0;
+            } else {
+                resultValue = Math.log(basedValue);
+            }
+        } else if (type == FeatureFunctionType.MULTIPLE) {
+            resultValue = basedValue * arguments[0];
+        } else if (type == FeatureFunctionType.POWER) {
+            resultValue = Math.pow(basedValue, arguments[0]);
+        }
+        return resultValue;
     }
 
     private void getInputValues(List<Map<String, Object>> trainingSet) throws SQLException {
@@ -467,6 +471,7 @@ public class DBReader {
         }
         return actualResult;
     }
+
     public List<Map<String, Double>> convertTestDataSet(List<Map<String, Object>> testSet) {
 
         List<Map<String, Double>> testDataSet = new ArrayList<Map<String, Double>>();

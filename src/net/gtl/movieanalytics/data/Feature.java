@@ -5,12 +5,14 @@
 
 package net.gtl.movieanalytics.data;
 
+import java.util.List;
+
 /**
  * Created by Julia on 3/10/14.
  */
 public class Feature {
     private String name;
-    private FeatureFunction function = null;
+    private List<FeatureFunction> functions = null;
 
     public Feature(String name) {
         this.name = name;
@@ -20,11 +22,11 @@ public class Feature {
         return name;
     }
 
-    public FeatureFunction getFunction() {
-        return function;
+    public List<FeatureFunction> getFunctions() {
+        return functions;
     }
 
-    public void setFunction(FeatureFunction function) {
-        this.function = function;
+    public void setFunctions(List<FeatureFunction> functions) {
+        this.functions = functions;
     }
 }
